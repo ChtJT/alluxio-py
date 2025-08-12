@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-import Lance, pyarrow as pa, pandas as pd
+import lance, pyarrow as pa, pandas as pd
 from pathlib import Path
 from datetime import datetime
 

@@ -3,7 +3,7 @@ import lance, pyarrow as pa
 from pathlib import Path
 from datetime import datetime
 
-from Lance.Lance.Repository.DatasetRepository import DatasetRepository
+from lance.Lance.Repository.DatasetRepository import DatasetRepository
 
 
 class LanceDatasetRepository(DatasetRepository):
@@ -23,5 +23,5 @@ class LanceDatasetRepository(DatasetRepository):
 
     def query(self, name: str):
         ds = lance.dataset(str(self.meta_path))
-        table = ds.to_table(filter=(pa.compute.equal(ds["name"], name)))
+        table = ds.to_table(filter=(pa.compute.equal(ds["lance"], name)))
         return table.to_pandas()
