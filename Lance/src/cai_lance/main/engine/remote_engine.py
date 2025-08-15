@@ -19,11 +19,11 @@ class RemoteBaseEngine(BaseEngine):
             writer.write_table(table)
         ipc_bytes = buf.getvalue().to_pybytes()
         if isinstance(self.client, HttpClient):
-            self.client.post("/dataset/write", {"mode": mode, "table_ipc": ipc_bytes, "options": options})
+            self.client.post("/dataset/operation", {"mode": mode, "table_ipc": ipc_bytes, "options": options})
         elif isinstance(self.client, GrpcClient):
             self.client.write(ipc_bytes, mode, options)
         else:
-            self.client.send("write", {"mode": mode, "table_ipc": ipc_bytes, "options": options})
+            self.client.send("operation", {"mode": mode, "table_ipc": ipc_bytes, "options": options})
 
     def append(self, table: Union[pa.Table, pd.DataFrame], **options) -> None:
         self.write(table, mode="append", **options)

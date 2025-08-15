@@ -535,11 +535,11 @@ class AlluxioFileSystem:
 
         Args:
             file_path: The path of the file where data is to be written.
-            page_index: The page index in the file to write the data.
-            page_bytes: The byte data to write to the specified page, MUST BE FULL PAGE.
+            page_index: The page index in the file to operation the data.
+            page_bytes: The byte data to operation to the specified page, MUST BE FULL PAGE.
 
         Returns:
-            True if the write was successful, False otherwise.
+            True if the operation was successful, False otherwise.
         """
         self._validate_path(file_path)
         worker_host, worker_http_port = self._get_preferred_worker_address(
@@ -1073,11 +1073,11 @@ class AlluxioAsyncFileSystem:
 
         Args:
             file_path: The path of the file where data is to be written.
-            page_index: The page index in the file to write the data.
-            page_bytes: The byte data to write to the specified page, MUST BE FULL PAGE.
+            page_index: The page index in the file to operation the data.
+            page_bytes: The byte data to operation to the specified page, MUST BE FULL PAGE.
 
         Returns:
-            True if the write was successful, False otherwise.
+            True if the operation was successful, False otherwise.
         """
         self._validate_path(file_path)
         worker_host = self._get_preferred_worker_host(file_path)

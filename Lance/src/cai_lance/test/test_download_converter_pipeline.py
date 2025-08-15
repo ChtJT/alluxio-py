@@ -13,18 +13,16 @@ import tempfile
 import pyarrow.parquet as pq
 
 def _save_table(table: pa.Table, base_out: Path) -> Path:
-    base_out.parent.mkdir(parents=True, exist_ok=True)
+    alluxio_path = Path("/mnt/people") / base_out.name
+    alluxio_path.parent.mkdir(parents=True, exist_ok=True)
 
     try:
-
-        lance_dir = base_out.with_suffix(".lance")
-        # Lance 数据集是“目录”
+        lance_dir = alluxio_path.with_suffix(".lance")
         lance.write_dataset(table, str(lance_dir), mode="overwrite")
         assert lance_dir.is_dir(), f"Lance 目录未生成：{lance_dir}"
         return lance_dir
     except Exception:
-        # 没装 lance 或写入失败时退化为 Parquet
-        parquet_path = base_out.with_suffix(".parquet")
+        parquet_path = alluxio_path.with_suffix(".parquet")
         pq.write_table(table, parquet_path)
         assert parquet_path.is_file(), f"Parquet 文件未生成：{parquet_path}"
         return parquet_path

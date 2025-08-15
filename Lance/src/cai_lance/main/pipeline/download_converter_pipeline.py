@@ -1,6 +1,6 @@
 from Lance.src.cai_lance.main.base.base_converter import BaseConverter
 from Lance.src.cai_lance.main.base.base_downloader import BaseDownloader
-from Lance.src.cai_lance.main.write.lance_writer import LanceWriter
+from Lance.src.cai_lance.main.operation.writer_lance import LanceWriter
 
 
 class DownloadConverterPipeline:
