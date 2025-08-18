@@ -15,4 +15,4 @@
 local.properties
 .idea/
 *.apk
-__pycache__/
+/__pycache__/

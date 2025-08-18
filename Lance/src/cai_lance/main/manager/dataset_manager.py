@@ -86,6 +86,7 @@ class DatasetManager:
             kwargs['filter'] = expr
         return ds.to_table(**kwargs)
 
+    # rollback 和 lookup的应该是一样的，rollback的时候给出一个选项，是否将当前的修改保存为一个新的version（），
     def rollback(self, version: int) -> None:
         ds = lance.dataset(self.path, version=version)
         self.overwrite(ds.to_table())
