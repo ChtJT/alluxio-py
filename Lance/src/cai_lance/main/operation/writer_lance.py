@@ -10,12 +10,12 @@ class LanceWriter:
         self.primary_key = primary_key
 
     def write_batch(self, records: Iterable[Dict[str,Any]]):
-        # 一次写一个 batch 到 Lance
+        # Write one batch to Lance at a time
         table = pa.Table.from_pylist(list(records))
         lance.write_dataset(
             table,
             self.path,
             mode=self.mode,
         )
-        # 下一次 batch 用 append
+        # The next batch will use "append"
         self.mode = "append"

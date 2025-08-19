@@ -8,7 +8,7 @@ from . import transforms as T
 
 class LanceExampleReader:
     """
-    统一的数据读取与样本“标准化”层：输出 Python/NumPy 为主的 dict（跨框架无关）
+    Unified data reading and sample "standardization" layer: Outputs dict (framework-independent) mainly in Python/NumPy format
     """
     def __init__(
         self,
@@ -31,7 +31,7 @@ class LanceExampleReader:
         for batch in ds.to_batches(batch_size=self.batch_rows, columns=self.columns, filter=self.filter):
             table = pa.Table.from_batches([batch])
             for i in range(table.num_rows):
-                # pyarrow Row -> python dict（列名 -> 单值）
+                # pyarrow Row -> python dict(Variable name -> Single value)
                 row = {name: table.column(name)[i].as_py() for name in table.schema.names}
                 yield self._row_to_example(row)
 
@@ -46,13 +46,13 @@ class LanceExampleReader:
         if self.mapping.text:
             txt = row[self.mapping.text]
             if self.tokenizer:
-                # HuggingFace tokenizer: 返回 numpy/py 值，框架适配层再转 tensor
+                # HuggingFace tokenizer: Returns numpy/py values, and the framework adapter layer then converts them to tensors
                 enc = self.tokenizer(str(txt), truncation=True, padding=False, return_tensors=None)
-                # 统一每个字段为 list[int] / list[list[int]] -> np.array
+                # Convert each field to list[int] / list[list[int]] -> np.array
                 for k, v in enc.items():
                     ex[k] = np.asarray(v, dtype=np.int32)
             else:
-                # 不用 tokenizer 时，给出原始 UTF-8 bytes（下游可自定义）
+                # Without using the tokenizer, the original UTF-8 bytes are provided (downstream can be customized)
                 ex["text_bytes"] = np.frombuffer(str(txt).encode("utf-8"), dtype=np.uint8)
 
         # features

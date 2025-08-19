@@ -62,9 +62,7 @@ class ParquetConverter(BaseConverter):
 
         if suffix in (".parquet", ".parq"):
             table = pq.read_table(source)
-            # 简单控制一下大表的物化（可选）
             if table.num_rows > self.eager_max_rows:
-                # 改用流式 reader（避免一次性 materialize）
                 dataset = ds.dataset([source], format="parquet")
                 reader = dataset.scanner().to_reader(self.batch_rows)
                 return {"uri": source, "reader": reader, "schema": dataset.schema}

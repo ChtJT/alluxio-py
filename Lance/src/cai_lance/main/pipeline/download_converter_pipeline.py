@@ -3,6 +3,7 @@ from Lance.src.cai_lance.main.base.base_downloader import BaseDownloader
 from Lance.src.cai_lance.main.operation.writer_lance import LanceWriter
 
 
+# TODO: 未完成，整个pipeline有点问题
 class DownloadConverterPipeline:
     def __init__(
         self,

@@ -5,6 +5,9 @@ import grpc
 import requests
 import websocket
 
+from ..rpc import test_pb2 as pb2
+from ..rpc import test_pb2_grpc as pb2_grpc
+
 class HttpClient:
     def __init__(
             self,
@@ -34,40 +37,38 @@ class HttpClient:
         return r.json()
 
 class GrpcClient:
-    def __init__(self, target: str, creds: Optional[grpc.ChannelCredentials] = None):
+    def __init__(self, target: str, creds: grpc.ChannelCredentials | None = None):
         self.channel = grpc.secure_channel(target, creds) if creds else grpc.insecure_channel(target)
-        self.stub = DatasetServiceStub(self.channel)
+        self.stub = pb2_grpc.DatasetServiceStub(self.channel)
 
-    def write(self, table_ipc: bytes, mode: str, options: Dict[str, Any]) -> None:
-        req = WriteRequest(mode=mode, table_ipc=table_ipc, options=json.dumps(options))
+    def write(self, table_ipc: bytes, mode: str, options: dict) -> None:
+        req = pb2.WriteRequest(mode=mode, table_ipc=table_ipc, options=json.dumps(options))
         self.stub.WriteDataset(req)
 
-    def read(self, params: Dict[str, Any]) -> bytes:
-        req = ReadRequest(params=json.dumps(params))
+    def read(self, params: dict) -> bytes:
+        req = pb2.ReadRequest(params=json.dumps(params))
         res = self.stub.ReadDataset(req)
         return res.table_ipc
 
-    def list_versions(self) -> List[Dict[str, Any]]:
-        req = VersionsRequest()
-        res = self.stub.ListVersions(req)
+    def list_versions(self) -> list[dict]:
+        res = self.stub.ListVersions(pb2.VersionsRequest())
         return json.loads(res.versions_json)
 
     def rollback(self, version: int) -> None:
-        req = RollbackRequest(version=version)
-        self.stub.RollbackDataset(req)
+        self.stub.RollbackDataset(pb2.RollbackRequest(version=version))
 
-    def optimize(self, opts: Dict[str, Any]) -> None:
-        req = OptimizeRequest(options=json.dumps(opts))
-        self.stub.OptimizeDataset(req)
+    def optimize(self, opts: dict) -> None:
+        self.stub.OptimizeDataset(pb2.OptimizeRequest(options=json.dumps(opts)))
 
-    def create_vector_index(self, column: str, opts: Dict[str, Any]) -> None:
-        req = IndexRequest(column=column, options=json.dumps(opts))
-        self.stub.CreateIndex(req)
+    def create_vector_index(self, column: str, opts: dict) -> None:
+        self.stub.CreateIndex(pb2.IndexRequest(column=column, options=json.dumps(opts)))
 
-    def query_sql(self, sql: str) -> Dict[str, Any]:
-        req = SQLRequest(sql=sql)
-        res = self.stub.QuerySQL(req)
-        return {"data": json.loads(res.data_json), "columns": list(res.columns)}
+    def query_sql(self, sql: str) -> dict:
+        # 这里就不会再“未解析”了
+        res = self.stub.QuerySQL(pb2.SQLRequest(sql=sql))
+        # 防御空字符串
+        data = json.loads(res.data_json or "[]")
+        return {"data": data, "columns": list(res.columns)}
 
 class WsClient:
     def __init__(self, ws_url: str):
