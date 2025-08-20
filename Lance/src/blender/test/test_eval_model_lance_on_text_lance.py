@@ -9,8 +9,8 @@ import torch.nn.functional as F
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 
-from Lance.src.cai_lance.main.integration.core.mapping import ColumnMapping
-from Lance.src.cai_lance.main.integration.pytorch.lance_torch_dataset import LanceTorchDataset
+from Lance.src.blender.main.integration.core.mapping import ColumnMapping
+from Lance.src.blender.main.integration.pytorch.lance_torch_dataset import LanceTorchDataset
 
 
 def text_collate_fn(batch):
@@ -26,7 +26,6 @@ def text_collate_fn(batch):
         out["labels"] = torch.stack(ys, 0)
     return out
 
-# ===== 工具：选文本列 & 简单 tokenizer =====
 def _pick_text_column(ds) -> str:
     schema = ds.schema
     names = schema.names
@@ -40,7 +39,6 @@ def _pick_text_column(ds) -> str:
     raise ValueError("未找到字符串列作为文本。")
 
 class CappedTokenizer:
-    """空格分词；在线构建 ≤max_vocab 的词表；返回 numpy 字段。"""
     def __init__(self, texts_iter, max_vocab: int):
         vocab = {"[PAD]": 0, "[UNK]": 1}
         idx = 2
@@ -85,7 +83,6 @@ def test_eval_model_lance_on_text_lance_no_training(tmp_path, max_batches):
     if not model_uri or not data_uri:
         pytest.skip("请设置环境变量 MODEL_LANCE_URI 和 DATA_LANCE_URI 指向 .lance 文件。")
 
-    # 1) 读取模型嵌入矩阵（假定 .lance 仅一行，含 shape / data）
     ds_model = lance.dataset(model_uri)
     tbl_m = ds_model.to_table(columns=["shape", "data"])
     assert tbl_m.num_rows == 1, "模型 .lance 应只有一行（单张量）"

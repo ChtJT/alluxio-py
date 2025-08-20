@@ -4,8 +4,8 @@ import numpy as np
 import pytest
 import torch
 
-from Lance.src.cai_lance.main.converter.tensor_converter import TensorConverter
-from Lance.src.cai_lance.main.downloader.model_downloader import ModelDownloader
+from Lance.src.blender.main.converter.tensor_converter import TensorConverter
+from Lance.src.blender.main.downloader.model_downloader import ModelDownloader
 
 
 def _fake_snapshot_download(repo_id, repo_type, local_dir, local_dir_use_symlinks, resume_download, revision=None, token=None, **_):

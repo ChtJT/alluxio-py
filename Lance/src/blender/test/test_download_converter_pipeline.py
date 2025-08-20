@@ -7,8 +7,8 @@ import pyarrow as pa
 import pytest
 from datasets import Dataset
 import lance
-from Lance.src.cai_lance.main.converter.text_converter import TextConverter
-from Lance.src.cai_lance.main.downloader.dataset_downloader import DatasetDownloader
+from Lance.src.blender.main.converter.text_converter import TextConverter
+from Lance.src.blender.main.downloader.dataset_downloader import DatasetDownloader
 import tempfile
 import pyarrow.parquet as pq
 

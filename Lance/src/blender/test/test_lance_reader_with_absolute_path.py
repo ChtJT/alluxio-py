@@ -2,7 +2,7 @@ import pytest
 import pyarrow as pa
 from pathlib import Path
 
-from Lance.src.cai_lance.main.operation.read_lance import LanceReader
+from Lance.src.blender.main.operation.read_lance import LanceReader
 
 
 import pyarrow as pa

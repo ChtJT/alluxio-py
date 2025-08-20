@@ -3,7 +3,7 @@ import io
 from PIL import Image
 import numpy as np
 import pyarrow as pa
-from Lance.src.cai_lance.main.converter.png_converter import PngConverter
+from Lance.src.blender.main.converter.png_converter import PngConverter
 
 
 def create_dummy_png(path):

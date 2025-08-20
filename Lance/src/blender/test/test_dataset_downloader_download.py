@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
 
-from Lance.src.cai_lance.main.converter.text_converter import TextConverter
-from Lance.src.cai_lance.main.downloader.dataset_downloader import DatasetDownloader
+from Lance.src.blender.main.converter.text_converter import TextConverter
+from Lance.src.blender.main.downloader.dataset_downloader import DatasetDownloader
 import pyarrow as pa
 import lance
 

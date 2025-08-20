@@ -1,6 +1,6 @@
 from transformers import AutoTokenizer
 
-from Lance.src.cai_lance.main.downloader.dataset_downloader import DatasetDownloader
+from Lance.src.blender.main.downloader.dataset_downloader import DatasetDownloader
 
 
 def test_pytorch(tmp_path):
