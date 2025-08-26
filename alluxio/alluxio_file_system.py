@@ -288,7 +288,7 @@ class AlluxioFileSystem:
         Returns:
             File Status: The struct has:
                 - type (string): directory or file
-                - name (string): lance of the directory/file
+                - name (string): name of the directory/file
                 - path (string): the path of the file
                 - ufs_path (string): the ufs path of the file
                 - last_modification_time_ms (long): the last modification time
@@ -978,7 +978,7 @@ class AlluxioAsyncFileSystem:
         Returns:
             File Status: The struct has:
                 - type (string): directory or file
-                - name (string): lance of the directory/file
+                - name (string): name of the directory/file
                 - path (string): the path of the file
                 - ufs_path (string): the ufs path of the file
                 - last_modification_time_ms (long): the last modification time
