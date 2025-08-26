@@ -1,20 +1,23 @@
-from Lance.src.blender.main.base.base_converter import BaseConverter
-import os
-import io
-import gzip
 import glob
+import gzip
+import os
 import shutil
-import zipfile
 import tempfile
+import zipfile
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any
+from typing import Dict
 
-import pyarrow as pa
-import pyarrow.parquet as pq
 import pyarrow.dataset as ds
+import pyarrow.parquet as pq
+
+from Lance.src.blender.main.base.base_converter import BaseConverter
+
 
 class ParquetConverter(BaseConverter):
-    def __init__(self, *, batch_rows: int = 128_000, eager_max_rows: int = 2_000_000):
+    def __init__(
+        self, *, batch_rows: int = 128_000, eager_max_rows: int = 2_000_000
+    ):
         self.batch_rows = batch_rows
         self.eager_max_rows = eager_max_rows
 
@@ -27,11 +30,21 @@ class ParquetConverter(BaseConverter):
                     zf.extractall(td)
                 candidates = list(Path(td).rglob("*.parquet"))
                 if not candidates:
-                    raise ValueError("The .parquet file was not found in the ZIP file.")
-                dataset = ds.dataset([str(c) for c in candidates], format="parquet", partitioning="hive")
+                    raise ValueError(
+                        "The .parquet file was not found in the ZIP file."
+                    )
+                dataset = ds.dataset(
+                    [str(c) for c in candidates],
+                    format="parquet",
+                    partitioning="hive",
+                )
                 scanner = dataset.scanner()
                 reader = scanner.to_reader(self.batch_rows)
-                return {"uri": source, "reader": reader, "schema": dataset.schema}
+                return {
+                    "uri": source,
+                    "reader": reader,
+                    "schema": dataset.schema,
+                }
 
         if any(ch in source for ch in "*?[]"):
             files = glob.glob(source)
@@ -50,7 +63,9 @@ class ParquetConverter(BaseConverter):
 
         suffix = p.suffix.lower()
         if suffix == ".gz" and p.name.lower().endswith(".parquet.gz"):
-            with tempfile.NamedTemporaryFile(suffix=".parquet", delete=False) as tmp:
+            with tempfile.NamedTemporaryFile(
+                suffix=".parquet", delete=False
+            ) as tmp:
                 with gzip.open(source, "rb") as fin:
                     shutil.copyfileobj(fin, tmp)
                 tmp_path = tmp.name
@@ -65,7 +80,11 @@ class ParquetConverter(BaseConverter):
             if table.num_rows > self.eager_max_rows:
                 dataset = ds.dataset([source], format="parquet")
                 reader = dataset.scanner().to_reader(self.batch_rows)
-                return {"uri": source, "reader": reader, "schema": dataset.schema}
+                return {
+                    "uri": source,
+                    "reader": reader,
+                    "schema": dataset.schema,
+                }
             return {"uri": source, "table": table}
 
         raise ValueError(f"不支持的扩展名: {suffix}")

@@ -1,13 +1,20 @@
 import os
-import lance
-import pyarrow as pa
-import pandas as pd
-from typing import Any, Dict, List, Optional, Union
-import datafusion as df
-from datafusion import SessionContext
-from lance import LanceDataset, FFILanceTableProvider
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Union
 
-from Lance.src.blender.main.utils.build_filter_expression import _build_filter_expression
+import pandas as pd
+import pyarrow as pa
+from datafusion import SessionContext
+
+import lance
+from lance import FFILanceTableProvider
+from lance import LanceDataset
+from Lance.src.blender.main.utils.build_filter_expression import (
+    _build_filter_expression,
+)
 
 
 class DatasetManager:
@@ -15,7 +22,7 @@ class DatasetManager:
         self,
         path: str,
         primary_key: Optional[str] = None,
-        storage_options: Optional[Dict[str,str]] = None
+        storage_options: Optional[Dict[str, str]] = None,
     ):
         self.path = path
         self.primary_key = primary_key
@@ -23,42 +30,48 @@ class DatasetManager:
         self.storage_options = storage_options or {}
 
     def write(
-            self,
-            table: Union[pa.Table, pd.DataFrame],
-            mode: str = "overwrite",
-            **lance_kwargs: Any
+        self,
+        table: Union[pa.Table, pd.DataFrame],
+        mode: str = "overwrite",
+        **lance_kwargs: Any,
     ) -> lance.LanceDataset:
         if isinstance(table, pd.DataFrame):
             table = pa.Table.from_pandas(table, preserve_index=False)
         ds = lance.write_dataset(table, self.path, mode=mode, **lance_kwargs)
         return ds
 
-    def append(self, table: Union[pa.Table, pd.DataFrame], **lance_kwargs: Any) -> None:
+    def append(
+        self, table: Union[pa.Table, pd.DataFrame], **lance_kwargs: Any
+    ) -> None:
         self.write(table, mode="append", **lance_kwargs)
 
-    def upsert(self, table: Union[pa.Table, pd.DataFrame], **lance_kwargs: Any) -> LanceDataset:
+    def upsert(
+        self, table: Union[pa.Table, pd.DataFrame], **lance_kwargs: Any
+    ) -> LanceDataset:
         if not self.primary_key:
             raise ValueError("Upsert requires primary_key")
         if isinstance(table, pd.DataFrame):
             table = pa.Table.from_pandas(table, preserve_index=False)
         ds: LanceDataset = lance.dataset(self.path)
-        (ds
-            .merge_insert(on=self.primary_key)
+        (
+            ds.merge_insert(on=self.primary_key)
             .when_matched_update_all()
             .when_not_matched_insert_all()
             .execute(table)
         )
         return ds
 
-    def overwrite(self, table: Union[pa.Table, pd.DataFrame], **lance_kwargs: Any) -> LanceDataset:
+    def overwrite(
+        self, table: Union[pa.Table, pd.DataFrame], **lance_kwargs: Any
+    ) -> LanceDataset:
         return self.write(table, mode="overwrite", **lance_kwargs)
 
     def merge(
-            self,
-            data_obj: Union[pa.Table, pd.DataFrame],
-            left_on: str,
-            right_on: Optional[str] = None,
-            **lance_kwargs: Any
+        self,
+        data_obj: Union[pa.Table, pd.DataFrame],
+        left_on: str,
+        right_on: Optional[str] = None,
+        **lance_kwargs: Any,
     ) -> LanceDataset:
         if isinstance(data_obj, pd.DataFrame):
             data_obj = pa.Table.from_pandas(data_obj, preserve_index=False)
@@ -72,18 +85,18 @@ class DatasetManager:
         return ds.list_versions()
 
     def read(
-            self,
-            version: Optional[int] = None,
-            columns: Optional[List[str]] = None,
-            filters: Optional[List[tuple]] = None,
+        self,
+        version: Optional[int] = None,
+        columns: Optional[List[str]] = None,
+        filters: Optional[List[tuple]] = None,
     ) -> pa.Table:
         ds: LanceDataset = lance.dataset(self.path, version=version)
         kwargs: Dict[str, Any] = {}
         if columns is not None:
-            kwargs['columns'] = columns
+            kwargs["columns"] = columns
         if filters is not None:
             expr = _build_filter_expression(filters)
-            kwargs['filter'] = expr
+            kwargs["filter"] = expr
         return ds.to_table(**kwargs)
 
     # The rollback and lookup functions should be the same. During the rollback process, provide an option to decide whether to save the current modifications as a new version().
@@ -103,7 +116,7 @@ class DatasetManager:
             raise ValueError("History lookup requires primary_key")
         history: Dict[int, pa.Table] = {}
         for vinfo in self.list_versions():
-            ver = vinfo['version']
+            ver = vinfo["version"]
             tbl = self.get_row_at_version(key_value, ver)
             if tbl.num_rows > 0:
                 history[ver] = tbl
@@ -116,15 +129,19 @@ class DatasetManager:
         older_than_days: Optional[int] = None,
     ) -> None:
         import datetime
+
         ds: LanceDataset = lance.dataset(self.path)
         ds.optimize.compact_files(target_rows_per_fragment=compact_target_rows)
         cleanup_kwargs: Dict[str, Any] = {}
         if keep_last_n is not None:
-            cleanup_kwargs['keep_last_n'] = keep_last_n
+            cleanup_kwargs["keep_last_n"] = keep_last_n
         if older_than_days is not None:
-            cleanup_kwargs['older_than'] = datetime.timedelta(days=older_than_days)
-        ds.cleanup_old_versions(**cleanup_kwargs) if cleanup_kwargs else ds.cleanup_old_versions()
-
+            cleanup_kwargs["older_than"] = datetime.timedelta(
+                days=older_than_days
+            )
+        ds.cleanup_old_versions(
+            **cleanup_kwargs
+        ) if cleanup_kwargs else ds.cleanup_old_versions()
 
     def create_vector_index(
         self,
@@ -132,7 +149,7 @@ class DatasetManager:
         index_type: str = "IVF_PQ",
         metric: str = "l2",
         rebuild: bool = False,
-        **index_kwargs: Any
+        **index_kwargs: Any,
     ) -> None:
         ds: LanceDataset = lance.dataset(self.path)
         ds.create_index(
@@ -140,7 +157,7 @@ class DatasetManager:
             index_type=index_type,
             metric=metric,
             rebuild=rebuild,
-            **index_kwargs
+            **index_kwargs,
         )
 
     def query_sql(self, sql: str) -> pd.DataFrame:

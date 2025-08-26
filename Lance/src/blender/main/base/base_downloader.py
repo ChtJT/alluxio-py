@@ -1,8 +1,11 @@
-import logging
 import os
-from abc import ABC, abstractmethod
-from typing import Optional, Dict, Any
+from abc import ABC
+from abc import abstractmethod
+from typing import Any
+from typing import Optional
+
 from Lance.src.blender.main.utils.handle_errors import handle_errors
+
 
 class BaseDownloader(ABC):
     def __init__(self, name: str, cache_dir: Optional[str] = None):
@@ -18,5 +21,3 @@ class BaseDownloader(ABC):
     @abstractmethod
     def _download_impl(self) -> Any:
         ...
-
-

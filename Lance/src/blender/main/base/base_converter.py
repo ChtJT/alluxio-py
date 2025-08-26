@@ -1,6 +1,7 @@
-from abc import ABC, abstractmethod
-from typing import Any, Dict
-from venv import logger
+from abc import ABC
+from abc import abstractmethod
+from typing import Any
+from typing import Dict
 
 from Lance.src.blender.main.utils.handle_errors import handle_errors
 

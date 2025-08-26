@@ -2,18 +2,38 @@ import os
 from pathlib import Path
 from typing import Optional
 
-from datasets import load_dataset, DatasetDict
+from datasets import DatasetDict
+from datasets import load_dataset
 from huggingface_hub import snapshot_download
 from huggingface_hub.errors import HfHubHTTPError
 
 from Lance.src.blender.main.base.base_downloader import BaseDownloader
 
 DATA_EXTS = {
-    ".parquet", ".json", ".jsonl", ".csv", ".tsv", ".txt",
-    ".npy", ".npz", ".pt", ".pth",
-    ".jpg", ".jpeg", ".png", ".bmp", ".gif", ".tif", ".tiff", ".webp",
-    ".wav", ".mp3", ".flac", ".ogg"
+    ".parquet",
+    ".json",
+    ".jsonl",
+    ".csv",
+    ".tsv",
+    ".txt",
+    ".npy",
+    ".npz",
+    ".pt",
+    ".pth",
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".bmp",
+    ".gif",
+    ".tif",
+    ".tiff",
+    ".webp",
+    ".wav",
+    ".mp3",
+    ".flac",
+    ".ogg",
 }
+
 
 class DatasetDownloader(BaseDownloader):
     def __init__(
@@ -22,8 +42,8 @@ class DatasetDownloader(BaseDownloader):
         split: str = "train",
         cache_dir: Optional[str] = None,
         *,
-        mode: str = "repo", # "repo" 或 "arrow"
-        **load_kwargs
+        mode: str = "repo",  # "repo" 或 "arrow"
+        **load_kwargs,
     ):
         super().__init__(name, cache_dir)
         self.split = split
@@ -59,7 +79,9 @@ class DatasetDownloader(BaseDownloader):
             out_root = os.path.join(self.cache_dir, "arrow")
             os.makedirs(out_root, exist_ok=True)
 
-            ds = load_dataset(self.name, cache_dir=self.cache_dir, **self.load_kwargs)
+            ds = load_dataset(
+                self.name, cache_dir=self.cache_dir, **self.load_kwargs
+            )
 
             if isinstance(ds, DatasetDict):
                 result_dirs = {}

@@ -1,12 +1,9 @@
-import pytest
-import pyarrow as pa
 from pathlib import Path
+
+import pyarrow as pa
 
 from Lance.src.blender.main.operation.read_lance import LanceReader
 
-
-import pyarrow as pa
-from pathlib import Path
 
 def test_lance_reader_with_absolute_path():
     dataset_root = Path("/mnt/people/alpaca_eval.lance")

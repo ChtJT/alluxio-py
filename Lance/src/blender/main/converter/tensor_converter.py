@@ -1,9 +1,11 @@
-from typing import Dict, Any
+from typing import Any
+from typing import Dict
 
 import numpy as np
+import torch
 
 from Lance.src.blender.main.base.base_converter import BaseConverter
-import torch
+
 
 class TensorConverter(BaseConverter):
     def _first_tensor(self, obj: Any):

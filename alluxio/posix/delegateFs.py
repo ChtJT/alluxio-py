@@ -97,7 +97,7 @@ class DelegateFileSystem:
             self.__create__file__system(fs_name)
 
     def __parse__url(self, path: str):
-        # parse the schema and bucket lance in filepath
+        # parse the schema and bucket name in filepath
         if (type(path) is not str) or (path.startswith("/")):
             return Constants.LOCAL_FILESYSTEM_TYPE, None
         pattern = re.compile(r"^(\w+)://([^/]+)/.*")

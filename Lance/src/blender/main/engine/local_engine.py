@@ -1,17 +1,21 @@
-import lance
-
 from Lance.src.blender.main.base.base_engine import BaseEngine
 from Lance.src.blender.main.manager.dataset_manager import DatasetManager
 
 
 class LocalBaseEngine(BaseEngine):
-    def __init__(self, path, primary_key=None,
-                 default_write_mode="overwrite",
-                 optimize_config=None,
-                 index_config=None,
-                 storage_options=None,
-                 partition_cols=None):
-        self.manager = DatasetManager(path, primary_key, storage_options=storage_options)
+    def __init__(
+        self,
+        path,
+        primary_key=None,
+        default_write_mode="overwrite",
+        optimize_config=None,
+        index_config=None,
+        storage_options=None,
+        partition_cols=None,
+    ):
+        self.manager = DatasetManager(
+            path, primary_key, storage_options=storage_options
+        )
         self.default_write_mode = default_write_mode
         self.optimize_config = optimize_config or {}
         self.index_config = index_config or {}
@@ -30,7 +34,9 @@ class LocalBaseEngine(BaseEngine):
         return self.write(table, mode="upsert", **kwargs)
 
     def read(self, version=None, columns=None, filters=None, **read_opts):
-        return self.manager.read(version=version, columns=columns, filters=filters, **read_opts)
+        return self.manager.read(
+            version=version, columns=columns, filters=filters, **read_opts
+        )
 
     def list_versions(self):
         return self.manager.list_versions()

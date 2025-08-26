@@ -62,7 +62,7 @@ def test_worker_entity_from_info_dynamic():
 
 def camel_to_snake(name):
     """
-    Convert a CamelCase lance into snake_case.
+    Convert a CamelCase name into snake_case.
     """
     name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).lower()

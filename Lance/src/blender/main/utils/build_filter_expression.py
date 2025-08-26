@@ -1,8 +1,11 @@
-from typing import List, Optional
+from typing import List
+from typing import Optional
+
 import pyarrow as pa
 
+
 def _build_filter_expression(
-    filters: List[tuple]
+    filters: List[tuple],
 ) -> Optional[pa.compute.Expression]:
     expr: Optional[pa.compute.Expression] = None
     for col, op, val in filters:

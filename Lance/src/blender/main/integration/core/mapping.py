@@ -1,4 +1,6 @@
-from typing import Optional, List
+from typing import List
+from typing import Optional
+
 
 class ColumnMapping:
     text: Optional[str] = None  # text

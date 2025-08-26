@@ -1,8 +1,10 @@
 import io
-from typing import Dict, Any
+from typing import Any
+from typing import Dict
+
+from PIL import Image
 
 from Lance.src.blender.main.base.base_converter import BaseConverter
-from PIL import Image
 
 
 class PngConverter(BaseConverter):

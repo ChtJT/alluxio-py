@@ -1,14 +1,18 @@
 import os
-from typing import Optional, Dict, Any, Union
+from typing import Any
+from typing import Dict
+from typing import Optional
+from typing import Union
 
 import transformers
 from huggingface_hub import snapshot_download
-from transformers import AutoModel, AutoTokenizer
 
 from Lance.src.blender.main.base.base_downloader import BaseDownloader
 from Lance.src.blender.main.model.result.arrow_result import ArrowResult
 from Lance.src.blender.main.model.result.repo_result import RepoResult
-from Lance.src.blender.main.model.result.transformers_result import TransformersResult
+from Lance.src.blender.main.model.result.transformers_result import (
+    TransformersResult,
+)
 
 
 class ModelDownloader(BaseDownloader):
@@ -17,7 +21,7 @@ class ModelDownloader(BaseDownloader):
         name: str,
         cache_dir: Optional[str] = None,
         *,
-        mode: str = "repo", # "repo" or "transformers"
+        mode: str = "repo",  # "repo" or "transformers"
         model_name: str = "AutoModel",
         tokenizer: str = "AutoTokenizer",
         use_fast_tokenizer: bool = True,
@@ -36,7 +40,9 @@ class ModelDownloader(BaseDownloader):
         self.token = token
         self.from_pretrained_kwargs = from_pretrained_kwargs or {}
 
-    def _download_impl(self) -> Union[RepoResult, ArrowResult, TransformersResult]:
+    def _download_impl(
+        self,
+    ) -> Union[RepoResult, ArrowResult, TransformersResult]:
         if self.mode == "repo":
             local_dir = os.path.join(self.cache_dir or ".", "model_repo")
             path = snapshot_download(

@@ -1,9 +1,13 @@
 from os import PathLike
+from pathlib import Path
+from typing import Iterable
+from typing import List
+from typing import Optional
 
 import pyarrow as pa
+
 import lance
-from typing import Optional, Iterable, Dict, Any, List
-from pathlib import Path
+
 
 class LanceReader:
     def __init__(self, path: PathLike):
@@ -22,7 +26,9 @@ class LanceReader:
         ds = lance.dataset(self.path)
         return ds.to_table()
 
-    def read_batches(self, batch_size: Optional[int] = None) -> Iterable[pa.RecordBatch]:
+    def read_batches(
+        self, batch_size: Optional[int] = None
+    ) -> Iterable[pa.RecordBatch]:
         ds = lance.dataset(self.path)
         for batch in ds.to_batches(batch_size=batch_size):
             yield batch

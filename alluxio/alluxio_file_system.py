@@ -32,7 +32,7 @@ from .worker_ring import ConsistentHashProvider
 
 logging.basicConfig(
     level=logging.WARN,
-    format="%(asctime)s - %(lance)s - %(levelname)s - %(message)s",
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 
 
@@ -86,7 +86,7 @@ class AlluxioFileSystem:
     [
         {
             type: "file",
-            lance: "my_file_name",
+            name: "my_file_name",
             path: '/my_file_name',
             ufs_path: 's3://example-bucket/my_file_name',
             last_modification_time_ms: 0,
@@ -217,7 +217,7 @@ class AlluxioFileSystem:
         Returns:
             list of dict: A list containing dictionaries, where each dictionary has:
                 - type (str): 'directory' or 'file'.
-                - lance (str): Name of the directory/file.
+                - name (str): Name of the directory/file.
                 - path (str): Path of the directory/file.
                 - ufs_path (str): UFS path of the directory/file.
                 - last_modification_time_ms (int): Last modification time in milliseconds.
@@ -228,7 +228,7 @@ class AlluxioFileSystem:
             [
                 {
                     type: "file",
-                    lance: "my_file_name",
+                    name: "my_file_name",
                     path: '/my_file_name',
                     ufs_path: 's3://example-bucket/my_file_name',
                     last_modification_time_ms: 0,
@@ -237,7 +237,7 @@ class AlluxioFileSystem:
                 },
                 {
                     type: "directory",
-                    lance: "my_dir_name",
+                    name: "my_dir_name",
                     path: '/my_dir_name',
                     ufs_path: 's3://example-bucket/my_dir_name',
                     last_modification_time_ms: 0,
@@ -288,7 +288,7 @@ class AlluxioFileSystem:
         Returns:
             File Status: The struct has:
                 - type (string): directory or file
-                - lance (string): lance of the directory/file
+                - name (string): lance of the directory/file
                 - path (string): the path of the file
                 - ufs_path (string): the ufs path of the file
                 - last_modification_time_ms (long): the last modification time
@@ -298,7 +298,7 @@ class AlluxioFileSystem:
         Example:
             {
                 type: 'directory',
-                lance: 'a',
+                name: 'a',
                 path: '/a',
                 ufs_path: 's3://example-bucket/a',
                 last_modification_time_ms: 0,
@@ -444,7 +444,7 @@ class AlluxioFileSystem:
 
         Example:
             load_state = alluxio_fs.load_progress("s3://mybucket/mypath/file")
-            print(f"Current Load State: {load_state.lance}")
+            print(f"Current Load State: {load_state.name}")
         """
         self._validate_path(path)
         worker_host, worker_http_port = self._get_preferred_worker_address(
@@ -535,11 +535,11 @@ class AlluxioFileSystem:
 
         Args:
             file_path: The path of the file where data is to be written.
-            page_index: The page index in the file to operation the data.
-            page_bytes: The byte data to operation to the specified page, MUST BE FULL PAGE.
+            page_index: The page index in the file to write the data.
+            page_bytes: The byte data to write to the specified page, MUST BE FULL PAGE.
 
         Returns:
-            True if the operation was successful, False otherwise.
+            True if the write was successful, False otherwise.
         """
         self._validate_path(file_path)
         worker_host, worker_http_port = self._get_preferred_worker_address(
@@ -915,14 +915,14 @@ class AlluxioAsyncFileSystem:
         Returns:
             list of dict: A list containing dictionaries, where each dictionary has:
                 - mType (string): directory or file
-                - mName (string): lance of the directory/file
+                - mName (string): name of the directory/file
                 - mLength (integer): length of the file or 0 for directory
 
         Example:
             [
                 {
                     type: "file",
-                    lance: "my_file_name",
+                    name: "my_file_name",
                     path: '/my_file_name',
                     ufs_path: 's3://example-bucket/my_file_name',
                     last_modification_time_ms: 0,
@@ -931,7 +931,7 @@ class AlluxioAsyncFileSystem:
                 },
                 {
                     type: "directory",
-                    lance: "my_dir_name",
+                    name: "my_dir_name",
                     path: '/my_dir_name',
                     ufs_path: 's3://example-bucket/my_dir_name',
                     last_modification_time_ms: 0,
@@ -978,7 +978,7 @@ class AlluxioAsyncFileSystem:
         Returns:
             File Status: The struct has:
                 - type (string): directory or file
-                - lance (string): lance of the directory/file
+                - name (string): lance of the directory/file
                 - path (string): the path of the file
                 - ufs_path (string): the ufs path of the file
                 - last_modification_time_ms (long): the last modification time
@@ -988,7 +988,7 @@ class AlluxioAsyncFileSystem:
         Example:
             {
                 type: 'directory',
-                lance: 'a',
+                name: 'a',
                 path: '/a',
                 ufs_path: 's3://example-bucket/a',
                 last_modification_time_ms: 0,
@@ -1073,11 +1073,11 @@ class AlluxioAsyncFileSystem:
 
         Args:
             file_path: The path of the file where data is to be written.
-            page_index: The page index in the file to operation the data.
-            page_bytes: The byte data to operation to the specified page, MUST BE FULL PAGE.
+            page_index: The page index in the file to write the data.
+            page_bytes: The byte data to write to the specified page, MUST BE FULL PAGE.
 
         Returns:
-            True if the operation was successful, False otherwise.
+            True if the write was successful, False otherwise.
         """
         self._validate_path(file_path)
         worker_host = self._get_preferred_worker_host(file_path)

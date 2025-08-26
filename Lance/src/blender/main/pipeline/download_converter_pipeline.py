@@ -10,7 +10,7 @@ class DownloadConverterPipeline:
         downloader: BaseDownloader,
         converter: BaseConverter,
         writer: LanceWriter,
-        source_key: str
+        source_key: str,
     ):
         self.downloader = downloader
         self.converter = converter
@@ -23,7 +23,7 @@ class DownloadConverterPipeline:
         for example in ds:
             src = example[self.source_key]
             conv = self.converter._convert_impl(src)
-            out = {k:v for k,v in example.items() if k != self.source_key}
+            out = {k: v for k, v in example.items() if k != self.source_key}
             out.update(conv)
             batch.append(out)
 

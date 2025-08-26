@@ -1,8 +1,8 @@
 import io
 
-from PIL import Image
 import numpy as np
-import pyarrow as pa
+from PIL import Image
+
 from Lance.src.blender.main.converter.png_converter import PngConverter
 
 
@@ -10,6 +10,7 @@ def create_dummy_png(path):
     # Generate a 2×2 small red image.
     img = Image.new("RGB", (2, 2), color=(255, 0, 0))
     img.save(path)
+
 
 def test_png_converter_struct_and_values(tmp_path):
     png_path = tmp_path / "foo.png"

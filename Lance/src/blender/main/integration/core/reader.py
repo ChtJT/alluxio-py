@@ -1,15 +1,23 @@
-from typing import Any, Dict, Generator, Iterable, Optional, List
+from typing import Any
+from typing import Dict
+from typing import Iterable
+from typing import List
+from typing import Optional
+
 import numpy as np
 import pyarrow as pa
+
 import lance
+from . import transforms as T
 from .mapping import ColumnMapping
 from .utils import stable_label_id
-from . import transforms as T
+
 
 class LanceExampleReader:
     """
     Unified data reading and sample "standardization" layer: Outputs dict (framework-independent) mainly in Python/NumPy format
     """
+
     def __init__(
         self,
         lance_uri: str,
@@ -28,11 +36,18 @@ class LanceExampleReader:
 
     def __iter__(self) -> Iterable[Dict[str, Any]]:
         ds = lance.dataset(self.uri)
-        for batch in ds.to_batches(batch_size=self.batch_rows, columns=self.columns, filter=self.filter):
+        for batch in ds.to_batches(
+            batch_size=self.batch_rows,
+            columns=self.columns,
+            filter=self.filter,
+        ):
             table = pa.Table.from_batches([batch])
             for i in range(table.num_rows):
                 # pyarrow Row -> python dict(Variable name -> Single value)
-                row = {name: table.column(name)[i].as_py() for name in table.schema.names}
+                row = {
+                    name: table.column(name)[i].as_py()
+                    for name in table.schema.names
+                }
                 yield self._row_to_example(row)
 
     def _row_to_example(self, row: Dict[str, Any]) -> Dict[str, Any]:
@@ -47,13 +62,20 @@ class LanceExampleReader:
             txt = row[self.mapping.text]
             if self.tokenizer:
                 # HuggingFace tokenizer: Returns numpy/py values, and the framework adapter layer then converts them to tensors
-                enc = self.tokenizer(str(txt), truncation=True, padding=False, return_tensors=None)
+                enc = self.tokenizer(
+                    str(txt),
+                    truncation=True,
+                    padding=False,
+                    return_tensors=None,
+                )
                 # Convert each field to list[int] / list[list[int]] -> np.array
                 for k, v in enc.items():
                     ex[k] = np.asarray(v, dtype=np.int32)
             else:
                 # Without using the tokenizer, the original UTF-8 bytes are provided (downstream can be customized)
-                ex["text_bytes"] = np.frombuffer(str(txt).encode("utf-8"), dtype=np.uint8)
+                ex["text_bytes"] = np.frombuffer(
+                    str(txt).encode("utf-8"), dtype=np.uint8
+                )
 
         # features
         if self.mapping.features:
@@ -61,7 +83,9 @@ class LanceExampleReader:
 
         # image
         if self.mapping.image:
-            img = T.decode_image(row[self.mapping.image], self.mapping.image_root)  # HWC float32 [0,1]
+            img = T.decode_image(
+                row[self.mapping.image], self.mapping.image_root
+            )  # HWC float32 [0,1]
             ex["pixel_values"] = np.transpose(img, (2, 0, 1))  # CHW
 
         return ex

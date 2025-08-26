@@ -1,10 +1,14 @@
 import os
 from pathlib import Path
 
-from Lance.src.blender.main.converter.text_converter import TextConverter
-from Lance.src.blender.main.downloader.dataset_downloader import DatasetDownloader
 import pyarrow as pa
+
 import lance
+from Lance.src.blender.main.converter.text_converter import TextConverter
+from Lance.src.blender.main.downloader.dataset_downloader import (
+    DatasetDownloader,
+)
+
 
 def test_mt_dataset_download_and_convert_to_lance(tmp_path):
     tmp_path = Path(tmp_path)

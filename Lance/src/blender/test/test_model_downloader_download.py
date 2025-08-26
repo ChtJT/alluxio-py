@@ -1,14 +1,13 @@
 import os
 
 import numpy as np
-import pytest
-
-from Lance.src.blender.main.converter.tensor_converter import TensorConverter
-import torch
-import lance
-from huggingface_hub.utils import HfHubHTTPError
 import pyarrow as pa
+import pytest
+import torch
+from huggingface_hub.utils import HfHubHTTPError
 
+import lance
+from Lance.src.blender.main.converter.tensor_converter import TensorConverter
 from Lance.src.blender.main.downloader.model_downloader import ModelDownloader
 
 
@@ -38,7 +37,9 @@ def _first_tensor(obj):
 def test_hf_repo_pth_to_lance_via_tensor_converter(tmp_path):
     repo_id = "OpenNMT/nllb-200-onmt"
     try:
-        dl = ModelDownloader(name=repo_id, cache_dir=str(tmp_path), mode="repo")
+        dl = ModelDownloader(
+            name=repo_id, cache_dir=str(tmp_path), mode="repo"
+        )
         repo_path = dl.download()["path"]
     except HfHubHTTPError as e:
         pytest.skip(f"Hugging Face 下载失败或离线：{e}")
@@ -74,11 +75,13 @@ def test_hf_repo_pth_to_lance_via_tensor_converter(tmp_path):
                 out = conv._convert_impl(p)
             arr = out["tensor"]
             if not isinstance(arr, np.ndarray):
-                raise TypeError(f"TensorConverter 返回了非 ndarray 类型: {type(arr)}")
+                raise TypeError(
+                    f"TensorConverter 返回了非 ndarray 类型: {type(arr)}"
+                )
             if arr.dtype != np.float32:
                 arr = arr.astype(np.float32, copy=False)
         except Exception as e:
-            # 3.2 回退：递归找 checkpoint 里的第一个 Tensor
+            print(e)
             try:
                 obj = torch.load(p, map_location="cpu")
                 t = _first_tensor(obj)
@@ -94,19 +97,24 @@ def test_hf_repo_pth_to_lance_via_tensor_converter(tmp_path):
         stem = os.path.splitext(rel)[0].replace(os.sep, "_")
         lance_uri = str(out_dir / f"{stem}.lance")
 
-        table = pa.table({
-            "name": pa.array([rel], type=pa.string()),
-            "dtype": pa.array([str(arr.dtype)], type=pa.string()),
-            "shape": pa.array([list(arr.shape)], type=pa.list_(pa.int32())),
-            "numel": pa.array([int(arr.size)], type=pa.int64()),
-            "data": pa.array([arr.tobytes()], type=pa.binary()),
-        })
+        table = pa.table(
+            {
+                "name": pa.array([rel], type=pa.string()),
+                "dtype": pa.array([str(arr.dtype)], type=pa.string()),
+                "shape": pa.array(
+                    [list(arr.shape)], type=pa.list_(pa.int32())
+                ),
+                "numel": pa.array([int(arr.size)], type=pa.int64()),
+                "data": pa.array([arr.tobytes()], type=pa.binary()),
+            }
+        )
         lance.write_dataset(table, lance_uri, mode="overwrite")
         produced[p] = (lance_uri, arr)
 
     # 至少成功转到一个
     assert produced, f"没有任何文件被成功转换。失败 {len(failures)} 个：\n" + "\n".join(
-        f"{p} -> {e}" for p, e in failures)
+        f"{p} -> {e}" for p, e in failures
+    )
 
     # 4) 逐个读回校验
     for pth_path, (lance_uri, ref_arr) in produced.items():
@@ -116,7 +124,9 @@ def test_hf_repo_pth_to_lance_via_tensor_converter(tmp_path):
         shape = tbl.column("shape").to_pylist()[0]
         data_bytes = tbl.column("data").to_pylist()[0]
         back = np.frombuffer(data_bytes, dtype=np.float32).reshape(shape)
-        np.testing.assert_allclose(back, ref_arr, rtol=1e-6, atol=1e-6), f"不一致：{pth_path}"
+        np.testing.assert_allclose(
+            back, ref_arr, rtol=1e-6, atol=1e-6
+        ), f"不一致：{pth_path}"
 
     # 如有失败，打印出来作为提示（不让测试失败）
     if failures:

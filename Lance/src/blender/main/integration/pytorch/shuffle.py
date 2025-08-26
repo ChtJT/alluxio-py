@@ -1,11 +1,15 @@
 import random
+from typing import Dict
+from typing import Iterator
+
 from torch.utils.data import IterableDataset
-from typing import Iterator, Dict
+
 
 class BufferedShuffle(IterableDataset):
     """
     基于固定大小 buffer 的局部随机打乱（近似洗牌）。
     """
+
     def __init__(self, src: IterableDataset, buffer_size: int = 10_000):
         self.src = src
         self.buffer_size = buffer_size

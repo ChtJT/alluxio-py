@@ -1,4 +1,5 @@
-from typing import TypedDict, Literal
+from typing import Literal
+from typing import TypedDict
 
 
 class RepoResult(TypedDict):

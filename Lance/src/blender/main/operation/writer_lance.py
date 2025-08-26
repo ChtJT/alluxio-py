@@ -1,15 +1,25 @@
-from typing import Iterable, Optional, Dict, Any
+from typing import Any
+from typing import Dict
+from typing import Iterable
+from typing import Optional
 
-import lance
 import pyarrow as pa
 
+import lance
+
+
 class LanceWriter:
-    def __init__(self, path: str, mode: str="overwrite", primary_key: Optional[str]=None):
+    def __init__(
+        self,
+        path: str,
+        mode: str = "overwrite",
+        primary_key: Optional[str] = None,
+    ):
         self.path = path
         self.mode = mode
         self.primary_key = primary_key
 
-    def write_batch(self, records: Iterable[Dict[str,Any]]):
+    def write_batch(self, records: Iterable[Dict[str, Any]]):
         # Write one batch to Lance at a time
         table = pa.Table.from_pylist(list(records))
         lance.write_dataset(

@@ -1,6 +1,7 @@
 import hashlib
 from typing import Union
 
+
 def stable_label_id(val: Union[str, int, float]) -> Union[int, float]:
     """
     Uniformly convert the labels into trainable numerical values:

@@ -1,8 +1,11 @@
-import os
 import logging
 
-def logger(name: str, level: int = logging.INFO,
-               log_file: str = 'logs/lance_codec.log') -> logging.Logger:
+
+def logger(
+    name: str,
+    level: int = logging.INFO,
+    log_file: str = "logs/lance_codec.log",
+) -> logging.Logger:
     logger = logging.getLogger(name)
     if logger.handlers:
         return logger  # 避免重复添加 handler
@@ -12,7 +15,9 @@ def logger(name: str, level: int = logging.INFO,
     # 控制台 handler
     ch = logging.StreamHandler()
     ch.setLevel(level)
-    fmt = logging.Formatter('%(asctime)s - %(lance)s - %(levelname)s - %(message)s')
+    fmt = logging.Formatter(
+        "%(asctime)s - %(lance)s - %(levelname)s - %(message)s"
+    )
     ch.setFormatter(fmt)
     logger.addHandler(ch)
 
@@ -24,5 +29,6 @@ def logger(name: str, level: int = logging.INFO,
 
     return logger
 
-if __name__ == '__main__':
-    logger = logger('test')
+
+if __name__ == "__main__":
+    logger = logger("test")

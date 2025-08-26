@@ -1,5 +1,9 @@
-from abc import ABC, abstractmethod
-from typing import Union, List, Dict, Any
+from abc import ABC
+from abc import abstractmethod
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Union
 
 import pandas as pd
 import pyarrow as pa

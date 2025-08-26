@@ -1,16 +1,16 @@
-import os
+import tempfile
 from pathlib import Path
 
-import lance
-import pandas as pd
 import pyarrow as pa
+import pyarrow.parquet as pq
 import pytest
-from datasets import Dataset
+
 import lance
 from Lance.src.blender.main.converter.text_converter import TextConverter
-from Lance.src.blender.main.downloader.dataset_downloader import DatasetDownloader
-import tempfile
-import pyarrow.parquet as pq
+from Lance.src.blender.main.downloader.dataset_downloader import (
+    DatasetDownloader,
+)
+
 
 def _save_table(table: pa.Table, base_out: Path) -> Path:
     alluxio_path = Path("/mnt/people") / base_out.name
@@ -34,7 +34,11 @@ def _run_core(tmp_path: Path, repo_id: str, exts: set[str]):
     result = d.download()
 
     # 兼容返回 str 或 {"kind": "repo", "path": "..."}
-    repo_root = Path(result["path"]) if isinstance(result, dict) and "path" in result else Path(result)
+    repo_root = (
+        Path(result["path"])
+        if isinstance(result, dict) and "path" in result
+        else Path(result)
+    )
     assert repo_root.is_dir(), f"仓库根目录不存在: {repo_root}"
 
     # 找指定后缀文件
@@ -58,7 +62,7 @@ def _run_core(tmp_path: Path, repo_id: str, exts: set[str]):
         rel = f.relative_to(repo_root)
         base_out = out_root / rel  # 保留层级
         saved_path = _save_table(table, base_out)
-        print(f"→ {f}  ->  {saved_path}")
+        print(f"→ {f} -> {saved_path}")
 
         converted += 1
 
@@ -70,11 +74,12 @@ def _run_core(tmp_path: Path, repo_id: str, exts: set[str]):
     "repo_id, exts",
     [
         ("fka/awesome-chatgpt-prompts", {".csv"}),  # CSV
-        ("tatsu-lab/alpaca_eval", {".json"}),       # JSON
+        ("tatsu-lab/alpaca_eval", {".json"}),  # JSON
     ],
 )
 def test_text_converter_on_repo_files(tmp_path, repo_id, exts):
     _run_core(tmp_path, repo_id, exts)
+
 
 if __name__ == "__main__":
     with tempfile.TemporaryDirectory() as td:

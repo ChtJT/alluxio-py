@@ -1,10 +1,21 @@
-from typing import List, Dict
+from typing import Dict
+from typing import List
+
 import torch
 from torch.nn.utils.rnn import pad_sequence
 
-_PAD_KEYS = ("input_ids", "attention_mask", "token_type_ids", "text_ids", "text_bytes")
+_PAD_KEYS = (
+    "input_ids",
+    "attention_mask",
+    "token_type_ids",
+    "text_ids",
+    "text_bytes",
+)
 
-def text_collate_fn(batch: List[Dict[str, torch.Tensor]]) -> Dict[str, torch.Tensor]:
+
+def text_collate_fn(
+    batch: List[Dict[str, torch.Tensor]]
+) -> Dict[str, torch.Tensor]:
     out: Dict[str, torch.Tensor] = {}
     if not batch:
         return out
@@ -15,7 +26,11 @@ def text_collate_fn(batch: List[Dict[str, torch.Tensor]]) -> Dict[str, torch.Ten
         if k in _PAD_KEYS and k in batch[0]:
             seqs = [b[k] for b in batch if k in b]
             # 统一 int 类型
-            dtype = torch.long if seqs[0].dtype in (torch.int32, torch.int64, torch.uint8) else seqs[0].dtype
+            dtype = (
+                torch.long
+                if seqs[0].dtype in (torch.int32, torch.int64, torch.uint8)
+                else seqs[0].dtype
+            )
             seqs = [s.to(dtype) for s in seqs]
             out[k] = pad_sequence(seqs, batch_first=True, padding_value=0)
 
@@ -33,7 +48,10 @@ def text_collate_fn(batch: List[Dict[str, torch.Tensor]]) -> Dict[str, torch.Ten
 
     return out
 
-def image_collate_fn(batch: List[Dict[str, torch.Tensor]]) -> Dict[str, torch.Tensor]:
+
+def image_collate_fn(
+    batch: List[Dict[str, torch.Tensor]]
+) -> Dict[str, torch.Tensor]:
     out: Dict[str, torch.Tensor] = {}
     if not batch:
         return out

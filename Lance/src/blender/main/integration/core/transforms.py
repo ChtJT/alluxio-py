@@ -1,7 +1,12 @@
-import io, os
+import io
+import os
+from typing import Any
+from typing import Dict
+from typing import Optional
+
 import numpy as np
-from typing import Any, Dict, Optional
 from PIL import Image
+
 
 def to_feature_vector(row: Dict[str, Any], cols) -> np.ndarray:
     chunks = []
@@ -10,6 +15,7 @@ def to_feature_vector(row: Dict[str, Any], cols) -> np.ndarray:
         arr = np.asarray(v).reshape(-1)
         chunks.append(arr)
     return np.concatenate(chunks, axis=0).astype("float32")
+
 
 def decode_image(v: Any, image_root: Optional[str]) -> np.ndarray:
     if isinstance(v, dict) and "bytes" in v:

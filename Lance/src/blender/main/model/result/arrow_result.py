@@ -1,4 +1,6 @@
-from typing import TypedDict, Literal, Mapping
+from typing import Literal
+from typing import Mapping
+from typing import TypedDict
 
 
 class ArrowResult(TypedDict):

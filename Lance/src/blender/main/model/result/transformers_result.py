@@ -1,4 +1,6 @@
-from typing import Any, TypedDict, Literal
+from typing import Any
+from typing import Literal
+from typing import TypedDict
 
 
 class TransformersResult(TypedDict):

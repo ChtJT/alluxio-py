@@ -1,8 +1,8 @@
 import json
 import os
-from typing import Dict, Any, List
+from typing import Any
+from typing import Dict
 
-import lance
 import pandas as pd
 import pyarrow as pa
 
