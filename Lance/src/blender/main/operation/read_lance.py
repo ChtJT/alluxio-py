@@ -8,7 +8,7 @@ import pyarrow as pa
 
 import lance
 
-
+# TODO: 需要修改，才能使用
 class LanceReader:
     def __init__(self, path: PathLike):
         # Expect a dataset root dir (…/name.lance), not a fragment file
