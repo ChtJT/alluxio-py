@@ -224,6 +224,7 @@ def temporary_s3_options(
         invalidate_s3_cache()
 
 
+# TODO: 当输入不合法的时候需要报错或者自动调整
 def build_s3_uri(bucket: str, *keys: str) -> str:
     bucket = bucket.strip("/")
     if not keys:
