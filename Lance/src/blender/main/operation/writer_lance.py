@@ -6,6 +6,7 @@ from typing import Optional
 import lance
 import pyarrow as pa
 
+
 class LanceWriter:
     def __init__(
         self,
