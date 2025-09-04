@@ -5,18 +5,18 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+import lance
 import pandas as pd
 import pyarrow as pa
 from datafusion import SessionContext
 
-import lance
 from lance import FFILanceTableProvider
 from lance import LanceDataset
 from Lance.src.blender.main.utils.build_filter_expression import (
     _build_filter_expression,
 )
 
-# TODO: 检查对应的功能是否齐全
+
 class DatasetManager:
     def __init__(
         self,
