@@ -16,7 +16,7 @@ def logger(
     ch = logging.StreamHandler()
     ch.setLevel(level)
     fmt = logging.Formatter(
-        "%(asctime)s - %(lance)s - %(levelname)s - %(message)s"
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
     ch.setFormatter(fmt)
     logger.addHandler(ch)

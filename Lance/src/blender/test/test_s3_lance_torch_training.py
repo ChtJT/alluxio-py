@@ -40,7 +40,7 @@ def test_end2end_s3_lance_torch_training(tmp_path, train_steps):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     opt = torch.optim.AdamW(model.parameters(), lr=1e-5)
 
-    ds_name = ""
+    ds_name = f"test_dataset_{tmp_path.name}"
     s3_uri = build_s3_uri(bucket, "datasets", f"{ds_name}.lance")
 
     # lance.write_dataset(table, s3_uri, mode="overwrite", storage_options=opts)
@@ -74,7 +74,7 @@ def test_end2end_s3_lance_torch_training(tmp_path, train_steps):
         m = m.to(device) if m is not None else None
         y = batch["labels"].to(device).long()
 
-        logits = model(x, m)
+        logits = model(x, m).last_hidden_state
         loss = F.cross_entropy(logits, y)
         if init_loss is None:
             init_loss = loss.item()

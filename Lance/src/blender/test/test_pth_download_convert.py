@@ -9,68 +9,90 @@ from Lance.src.blender.main.converter.tensor_converter import TensorConverter
 from Lance.src.blender.main.downloader.model_downloader import ModelDownloader
 
 
-def _fake_snapshot_download(
-    repo_id,
-    repo_type,
-    local_dir,
-    local_dir_use_symlinks,
-    resume_download,
-    revision=None,
-    token=None,
-    **_,
-):
+def _fake_snapshot_download(repo_id: str, cache_dir: str = None, **kwargs) -> str:
     """
-    伪造 huggingface_hub.snapshot_download：
-    在 local_dir 下创建一个“模型仓库”并写入一个很小的 .pth 文件。
+    Mimic HF snapshot_download by creating a fake repo tree containing a .pth file.
+    Return the repo root path like HF does.
     """
-    os.makedirs(local_dir, exist_ok=True)
-    # 建一个子目录模拟常见结构
-    weights_dir = Path(local_dir) / "weights"
-    weights_dir.mkdir(parents=True, exist_ok=True)
+    repo_root = Path(cache_dir or ".") / f"{repo_id.replace('/', '__')}-FAKE"
+    repo_root.mkdir(parents=True, exist_ok=True)
+    (repo_root / "README.md").write_text("# fake", encoding="utf-8")
 
-    # 伪造一份很小的权重字典
-    small_tensor = torch.randn(2, 3)
-    state = {"linear.weight": small_tensor}
+    # Write a tiny tensor as .pth / .pt (your converter just needs a file path)
+    import torch
+    w = torch.randn(3, 4)
+    (repo_root / "mobilenet_v3_pretrained.pth").parent.mkdir(parents=True, exist_ok=True)
+    torch.save({"weight": w}, repo_root / "mobilenet_v3_pretrained.pth")
 
-    # 保存为 .pth
-    pth_path = weights_dir / "tiny_model.pth"
-    torch.save(state, pth_path)
-
-    # 顺便放点其它文件，模拟真实仓库
-    (Path(local_dir) / "config.json").write_text(
-        '{"dummy":"ok"}', encoding="utf-8"
-    )
-
-    return str(local_dir)
+    return str(repo_root)
 
 
-@pytest.mark.usefixtures()
+# tests/test_model_repo_pth_to_tensor.py
+import io
+import os
+from pathlib import Path
+import numpy as np
+import pytest
+
+# Whatever your real import is:
+# from your_pkg.model_downloader import ModelDownloader
+# from your_pkg.tensor_converter import TensorConverter
+
+def _fake_snapshot_download(repo_id: str, cache_dir: str = None, **kwargs) -> str:
+    """
+    Mimic HF snapshot_download by creating a fake repo tree containing a .pth file.
+    Return the repo root path like HF does.
+    """
+    repo_root = Path(cache_dir or ".") / f"{repo_id.replace('/', '__')}-FAKE"
+    repo_root.mkdir(parents=True, exist_ok=True)
+    (repo_root / "README.md").write_text("# fake", encoding="utf-8")
+
+    # Write a tiny tensor as .pth / .pt (your converter just needs a file path)
+    import torch
+    w = torch.randn(3, 4)
+    (repo_root / "mobilenet_v3_pretrained.pth").parent.mkdir(parents=True, exist_ok=True)
+    torch.save({"weight": w}, repo_root / "mobilenet_v3_pretrained.pth")
+
+    return str(repo_root)
+
 def test_model_repo_pth_to_tensor(tmp_path, monkeypatch):
-    monkeypatch.setattr(
-        "Surfrider/mobilenet_v3_pretrained.pth", _fake_snapshot_download
-    )
-
+    # Create a temporary cache directory
     cache_dir = tmp_path / "hf_cache"
+    cache_dir.mkdir()
+
+    # IMPORTANT: Patch the function as it is used inside ModelDownloader.
+    # Adjust "your_pkg.model_downloader" to match your actual module path.
+    monkeypatch.setattr(
+        "your_pkg.model_downloader.snapshot_download",
+        _fake_snapshot_download,
+        raising=True,
+    )
+
+    # Keep Hugging Face cache out of the user’s home directory
+    monkeypatch.setenv("HF_HOME", str(cache_dir))
+
+    # Initialize the downloader; repo name doesn’t matter since it’s mocked
     dl = ModelDownloader(
-        name="someone/tiny-model",  # 名字随便，反正被打桩了
+        name="someone/tiny-model",
         cache_dir=str(cache_dir),
-        mode="repo",  # 走“原样仓库文件”下载
+        mode="repo",
     )
+
+    # Perform the (mocked) download
     result = dl.download()
-    repo_root = (
-        Path(result["path"]) if isinstance(result, dict) else Path(result)
-    )
+    repo_root = Path(result["path"] if isinstance(result, dict) else result)
+    assert repo_root.is_dir(), f"Model repository path does not exist: {repo_root}"
 
-    assert repo_root.is_dir(), f"模型仓库路径不存在：{repo_root}"
-
-    # 找到刚才“下载”的 .pth
+    # Locate the .pth or .pt files
     pth_files = list(repo_root.rglob("*.pth")) + list(repo_root.rglob("*.pt"))
-    assert pth_files, "未找到任何 .pth/.pt 文件"
+    assert pth_files, "No .pth/.pt files were found in the fake repo"
 
+    # Convert each file and verify output
     conv = TensorConverter()
-
     for pth in pth_files:
         out = conv.convert(str(pth))
-        assert "tensor" in out, f"转换结果缺少 'tensor' 键：{pth}"
+        assert "tensor" in out, f"Conversion result missing 'tensor' key: {pth}"
         arr = out["tensor"]
-        assert isinstance(arr, np.ndarray), "应返回 numpy.ndarray，实际是"
+        assert isinstance(arr, np.ndarray), (
+            f"Expected numpy.ndarray, got {type(arr)}"
+        )

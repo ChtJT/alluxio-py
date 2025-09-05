@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="01183b92-1819-403d-a6d8-2f9eda0fc704" name="更改" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/utils/logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/main/utils/logger.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_eval_model_lance_on_text_lance.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/test/test_eval_model_lance_on_text_lance.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_pth_download_convert.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/test/test_pth_download_convert.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_s3_lance_torch_training.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/test/test_s3_lance_torch_training.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$USER_HOME$/Library/Caches/JetBrains/PyCharm2025.1/python_stubs/-1330273080/pyarrow/_dataset/Dataset.py" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="2zJgRKTRtAhLpLZi6qo80ffP7cT" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python 测试.pytest (test_converter.py 内).executor&quot;: &quot;Debug&quot;,
+    &quot;Python 测试.pytest (test_dataset_downloader_download.py 内).executor&quot;: &quot;Run&quot;,
+    &quot;Python 测试.pytest (test_download_converter_pipeline.py 内).executor&quot;: &quot;Run&quot;,
+    &quot;Python 测试.pytest (test_eval_model_lance_on_text_lance.py 内).executor&quot;: &quot;Debug&quot;,
+    &quot;Python 测试.pytest (test_model_downloader_download.py 内).executor&quot;: &quot;Run&quot;,
+    &quot;Python.__init__.executor&quot;: &quot;Run&quot;,
+    &quot;Python.logger.executor&quot;: &quot;Run&quot;,
+    &quot;Python.model_downloader.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/cjanus/PycharmProjects/alluxio-py&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lance/src/lance/test" />
+      <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/Lance/src/cai_lance/main/model/mapping" />
+      <recent name="$PROJECT_DIR$/Lance/src/cai_lance/main/converter" />
+      <recent name="$PROJECT_DIR$/Lance/src/cai_lance/main/base" />
+      <recent name="$PROJECT_DIR$/Lance/src/cai_lance/main/factory" />
+      <recent name="$PROJECT_DIR$/Lance/src/cai_lance/main/write" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-09060db00ec0-JavaScript-PY-251.26927.90" />
+        <option value="bundled-python-sdk-41e8cd69c857-64d779b69b7a-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.26927.90" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="01183b92-1819-403d-a6d8-2f9eda0fc704" name="更改" comment="" />
+      <created>1751454580610</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1751454580610</updated>
+      <workItem from="1751454581624" duration="575000" />
+      <workItem from="1751455171485" duration="26897000" />
+      <workItem from="1752079714627" duration="547000" />
+      <workItem from="1752080352846" duration="3916000" />
+      <workItem from="1753271094971" duration="112011000" />
+      <workItem from="1755003179180" duration="8721000" />
+      <workItem from="1755512561367" duration="10098000" />
+      <workItem from="1755668416176" duration="12115000" />
+      <workItem from="1755860869032" duration="595000" />
+      <workItem from="1756189685175" duration="17785000" />
+      <workItem from="1756795175103" duration="3059000" />
+      <workItem from="1756961690336" duration="2324000" />
+      <workItem from="1756970665805" duration="3757000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Lance/src/blender/test/test_converter.py</url>
+          <line>20</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Lance/src/blender/test/test_converter.py</url>
+          <line>34</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Lance/src/blender/main/downloader/model_downloader.py</url>
+          <line>16</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Lance/src/blender/main/pipeline/download_converter_pipeline.py</url>
+          <line>6</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/alluxio_py$pytest__test_eval_model_lance_on_text_lance_py__.coverage" NAME="pytest (test_eval_model_lance_on_text_lance.py 内) 覆盖结果" MODIFIED="1755677550870" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Lance/src/blender/test" />
+    <SUITE FILE_PATH="coverage/alluxio_py$pytest__test_converter_py__.coverage" NAME="pytest (test_converter.py 内) 覆盖结果" MODIFIED="1753775248827" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Lance/src/cai_lance/test" />
+    <SUITE FILE_PATH="coverage/alluxio_py$logger.coverage" NAME="logger 覆盖结果" MODIFIED="1753323772617" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/lance/src/name/main/utils" />
+    <SUITE FILE_PATH="coverage/alluxio_py$pytest__test_dataset_downloader_download_py__.coverage" NAME="pytest (test_dataset_downloader_download.py 内) 覆盖结果" MODIFIED="1755675909710" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Lance/src/cai_lance/test" />
+    <SUITE FILE_PATH="coverage/alluxio_py$__init__.coverage" NAME="__init__ 覆盖结果" MODIFIED="1753343790719" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/lance/src/lance/test" />
+    <SUITE FILE_PATH="coverage/alluxio_py$model_downloader.coverage" NAME="model_downloader 覆盖结果" MODIFIED="1755677100204" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Lance/src/cai_lance/main/downloader" />
+    <SUITE FILE_PATH="coverage/alluxio_py$pytest__test_download_converter_pipeline_py__.coverage" NAME="pytest (test_download_converter_pipeline.py 内) 覆盖结果" MODIFIED="1754984156151" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Lance/src/cai_lance/test" />
+    <SUITE FILE_PATH="coverage/alluxio_py$test.coverage" NAME="test 覆盖结果" MODIFIED="1754999136636" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Lance/src/cai_lance/test" />
+    <SUITE FILE_PATH="coverage/alluxio_py$pytest__test_model_downloader_download_py__.coverage" NAME="pytest (test_model_downloader_download.py 内) 覆盖结果" MODIFIED="1755678133058" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Lance/src/blender/test" />
+  </component>
+</project>
