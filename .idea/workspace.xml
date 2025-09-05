@@ -5,11 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="01183b92-1819-403d-a6d8-2f9eda0fc704" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/utils/logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/main/utils/logger.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/alluxio-py.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/alluxio-py.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/integration/core/reader.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/main/integration/core/reader.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/manager/dataset_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/main/manager/dataset_manager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/operation/read_lance.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/main/operation/read_lance.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/operation/writer_lance.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/main/operation/writer_lance.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_dataset_downloader_download.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/test/test_dataset_downloader_download.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_download_converter_pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/test/test_download_converter_pipeline.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_eval_model_lance_on_text_lance.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/test/test_eval_model_lance_on_text_lance.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_model_downloader_download.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/test/test_model_downloader_download.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_pth_download_convert.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/test/test_pth_download_convert.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_s3_lance_torch_training.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/test/test_s3_lance_torch_training.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -102,7 +113,7 @@
       <workItem from="1756189685175" duration="17785000" />
       <workItem from="1756795175103" duration="3059000" />
       <workItem from="1756961690336" duration="2324000" />
-      <workItem from="1756970665805" duration="3757000" />
+      <workItem from="1756970665805" duration="5825000" />
     </task>
     <servers />
   </component>

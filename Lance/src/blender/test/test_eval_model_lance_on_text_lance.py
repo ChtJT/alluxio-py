@@ -1,6 +1,5 @@
 import os
 
-import lance
 import numpy as np
 import pyarrow as pa
 import pytest
@@ -10,22 +9,11 @@ import torch.nn.functional as F
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 
+import lance
 from Lance.src.blender.main.integration.core.mapping import ColumnMapping
 from Lance.src.blender.main.integration.pytorch.lance_torch_dataset import (
     LanceTorchDataset,
 )
-
-
-import os
-import numpy as np
-import pyarrow as pa
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from torch.utils.data import DataLoader
-from torch.nn.utils.rnn import pad_sequence
-import pytest
-import lance
 
 # from your_pkg.mapping import ColumnMapping
 # from your_pkg.dataset import LanceTorchDataset
@@ -90,9 +78,13 @@ class CappedTokenizer:
         self.vocab = vocab
         self.unk = 1
 
-    def __call__(self, text, truncation=True, padding=False, return_tensors=None):
+    def __call__(
+        self, text, truncation=True, padding=False, return_tensors=None
+    ):
         toks = str(text).lower().split()
-        ids = np.array([self.vocab.get(tok, self.unk) for tok in toks], dtype=np.int32)
+        ids = np.array(
+            [self.vocab.get(tok, self.unk) for tok in toks], dtype=np.int32
+        )
         attn = np.ones_like(ids, dtype=np.int32)
         return {"input_ids": ids, "attention_mask": attn}
 
@@ -129,13 +121,17 @@ def test_eval_model_lance_on_text_lance_no_training(tmp_path, max_batches):
     model_uri = os.getenv("MODEL_LANCE_URI")
     data_uri = os.getenv("DATA_LANCE_URI")
     if not model_uri or not data_uri:
-        pytest.skip("Please set MODEL_LANCE_URI and DATA_LANCE_URI to valid .lance files.")
+        pytest.skip(
+            "Please set MODEL_LANCE_URI and DATA_LANCE_URI to valid .lance files."
+        )
 
     # Load model embeddings
     try:
         ds_model = lance.dataset(model_uri)
     except Exception as e:
-        pytest.skip(f"Could not open model .lance (MODEL_LANCE_URI='{model_uri}'): {e}")
+        pytest.skip(
+            f"Could not open model .lance (MODEL_LANCE_URI='{model_uri}'): {e}"
+        )
 
     try:
         tbl_m = ds_model.to_table(columns=["shape", "data"])
@@ -143,7 +139,9 @@ def test_eval_model_lance_on_text_lance_no_training(tmp_path, max_batches):
         pytest.skip(f"Model table missing 'shape' or 'data' columns: {e}")
 
     if tbl_m.num_rows != 1:
-        pytest.skip(f"Model .lance should have exactly one row, got {tbl_m.num_rows}.")
+        pytest.skip(
+            f"Model .lance should have exactly one row, got {tbl_m.num_rows}."
+        )
 
     try:
         shape = tbl_m.column("shape").to_pylist()[0]
@@ -163,7 +161,9 @@ def test_eval_model_lance_on_text_lance_no_training(tmp_path, max_batches):
     try:
         ds_data = lance.dataset(data_uri)
     except Exception as e:
-        pytest.skip(f"Could not open dataset .lance (DATA_LANCE_URI='{data_uri}'): {e}")
+        pytest.skip(
+            f"Could not open dataset .lance (DATA_LANCE_URI='{data_uri}'): {e}"
+        )
 
     try:
         text_col = _pick_text_column(ds_data)
@@ -174,7 +174,9 @@ def test_eval_model_lance_on_text_lance_no_training(tmp_path, max_batches):
         total_rows = ds_data.count_rows()
         if total_rows == 0:
             pytest.skip("Dataset is empty.")
-        head_tbl = ds_data.to_table(columns=[text_col], limit=min(5000, total_rows))
+        head_tbl = ds_data.to_table(
+            columns=[text_col], limit=min(5000, total_rows)
+        )
         texts_for_vocab = [row[text_col].as_py() for row in head_tbl]
         if not texts_for_vocab:
             pytest.skip("No text rows found in dataset.")
@@ -212,7 +214,9 @@ def test_eval_model_lance_on_text_lance_no_training(tmp_path, max_batches):
     with torch.no_grad():
         for batch in dl:
             if "input_ids" not in batch:
-                pytest.skip("Batch missing input_ids; check tokenizer and mapping.")
+                pytest.skip(
+                    "Batch missing input_ids; check tokenizer and mapping."
+                )
             x = batch["input_ids"].to(device)
             m = batch.get("attention_mask")
             m = m.to(device) if m is not None else None
@@ -228,5 +232,6 @@ def test_eval_model_lance_on_text_lance_no_training(tmp_path, max_batches):
             if seen >= max_batches:
                 break
 
-    assert seen > 0, "No batches were processed; please check dataset contents."
-
+    assert (
+        seen > 0
+    ), "No batches were processed; please check dataset contents."
