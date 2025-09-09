@@ -9,9 +9,9 @@ import lance
 import pandas as pd
 import pyarrow as pa
 from datafusion import SessionContext
+
 from lance import FFILanceTableProvider
 from lance import LanceDataset
-
 from Lance.src.blender.main.utils.build_filter_expression import (
     _build_filter_expression,
 )
