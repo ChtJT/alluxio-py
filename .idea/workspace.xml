@@ -5,22 +5,112 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="01183b92-1819-403d-a6d8-2f9eda0fc704" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/alluxio-py.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/alluxio-py.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/integration/core/reader.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/main/integration/core/reader.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/manager/dataset_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/main/manager/dataset_manager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/operation/read_lance.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/main/operation/read_lance.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/operation/writer_lance.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/main/operation/writer_lance.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_dataset_downloader_download.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/test/test_dataset_downloader_download.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_download_converter_pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/test/test_download_converter_pipeline.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_eval_model_lance_on_text_lance.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/test/test_eval_model_lance_on_text_lance.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_model_downloader_download.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/test/test_model_downloader_download.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_pth_download_convert.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lance/src/blender/test/test_pth_download_convert.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/ci.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/alluxio-py.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.pre-commit-config.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CONTRIBUTING.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/config/convert_config.cfg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/base/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/base/base_converter.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/base/base_downloader.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/base/base_engine.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/converter/parquet_converter.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/converter/png_converter.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/converter/tensor_converter.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/converter/text_converter.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/demo/demo_nlp_bert_train.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/downloader/dataset_downloader.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/downloader/model_downloader.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/engine/local_engine.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/engine/remote_engine.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/factory/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/factory/converter_factory.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/integration/core/mapping.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/integration/core/reader.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/integration/core/transforms.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/integration/core/utils.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/integration/pytorch/collate.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/integration/pytorch/lance_torch_dataset.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/integration/pytorch/shuffle.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/integration/pytorch/transforms.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/integration/tensorflow/lance_tensorflow_dataset.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/manager/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/manager/dataset_manager.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/model/EncodedImage.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/model/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/model/result/arrow_result.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/model/result/repo_result.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/model/result/transformers_result.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/operation/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/operation/read_lance.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/operation/writer_lance.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/pipeline/download_converter_pipeline.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/proto/test.proto" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/rpc/test_pb2.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/rpc/test_pb2_grpc.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/setup.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/utils/build_filter_expression.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/utils/client.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/utils/config_loader.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/utils/handle_errors.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/utils/logger.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/main/utils/s3_options.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_converter.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_dataset_downloader_download.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_download_converter_pipeline.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_eval_model_lance_on_text_lance.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_lance_reader_with_absolute_path.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_model_downloader_download.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_pth_download_convert.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_pytorch.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_s3_lance_torch_training.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lance/src/blender/test/test_training_with_lance.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/alluxio/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/alluxio/alluxio_file_system.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/alluxio/const.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/alluxio/posix/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/alluxio/posix/config.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/alluxio/posix/const.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/alluxio/posix/delegate.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/alluxio/posix/delegateFs.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/alluxio/posix/exception.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/alluxio/posix/fileimpl.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/alluxio/posix/setup.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/alluxio/posix/ufs/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/alluxio/posix/ufs/alluxio.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/alluxio/posix/ufs/oss.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/alluxio/worker_ring.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/environment_conda.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pytest.ini" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/setup.cfg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/assets/test.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/conftest.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/hash_res/activeNodesMap.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/hash_res/fileUrlWorkers.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/hash_res/workerHostnames.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/hash_res/workerList.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_docker_alluxio.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_fake_server.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_read_range.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_read_range_docker.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_worker_entity.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_worker_hash_ring.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -113,7 +203,8 @@
       <workItem from="1756189685175" duration="17785000" />
       <workItem from="1756795175103" duration="3059000" />
       <workItem from="1756961690336" duration="2324000" />
-      <workItem from="1756970665805" duration="5825000" />
+      <workItem from="1756970665805" duration="13330000" />
+      <workItem from="1757400366665" duration="370000" />
     </task>
     <servers />
   </component>
