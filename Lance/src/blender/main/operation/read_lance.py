@@ -4,9 +4,9 @@ from typing import Iterable
 from typing import List
 from typing import Optional
 
+import lance
 import pyarrow as pa
 
-import lance
 
 
 class LanceReader:
