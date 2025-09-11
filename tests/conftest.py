@@ -19,7 +19,7 @@ ALLUXIO_FILE_PATH = "file://{}".format("/opt/alluxio/ufs/test.csv")
 
 
 def stop_docker(container):
-    cmd = shlex.split('docker ps -a -q --filter "lance=%s"' % container)
+    cmd = shlex.split('docker ps -a -q --filter "name=%s"' % container)
     cid = subprocess.check_output(cmd).strip().decode()
     if cid:
         LOGGER.debug("Stopping existing container %s" % cid)
@@ -38,7 +38,7 @@ def docker_alluxio():
 
     run_cmd_master = (
         "docker run --platform linux/amd64 -d --rm --net=alluxio_network -p 19999:19999 -p 19998:19998 "
-        f"--lance=alluxio-master -v {TEST_DIR}:/opt/alluxio/ufs "
+        f"--name=alluxio-master -v {TEST_DIR}:/opt/alluxio/ufs "
         '-e ALLUXIO_JAVA_OPTS=" -Dalluxio.master.hostname=alluxio-master '
         "-Dalluxio.security.authentication.type=NOSASL "
         "-Dalluxio.security.authorization.permission.enabled=false "
@@ -50,7 +50,7 @@ def docker_alluxio():
     )
     run_cmd_worker = (
         "docker run --platform linux/amd64 -d --rm --net=alluxio_network -p 28080:28080 -p 29999:29999 -p 29997:29997 "
-        f"--lance=alluxio-worker --shm-size=1G -v {TEST_DIR}:/opt/alluxio/ufs "
+        f"--name=alluxio-worker --shm-size=1G -v {TEST_DIR}:/opt/alluxio/ufs "
         '-e ALLUXIO_JAVA_OPTS=" -Dalluxio.master.hostname=alluxio-master '
         "-Dalluxio.security.authentication.type=NOSASL "
         "-Dalluxio.security.authorization.permission.enabled=false "

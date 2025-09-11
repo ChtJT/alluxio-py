@@ -22,12 +22,6 @@ def parse_args():
         help="The local file path to validate against",
     )
     parser.add_argument(
-    "--worker_hosts",
-        type = str,
-        default = "localhost",
-        help = "Comma-separated list of Alluxio worker addresses (host[:port]).",
-    )
-    parser.add_argument(
         "--etcd_hosts",
         type=str,
         default="localhost",
