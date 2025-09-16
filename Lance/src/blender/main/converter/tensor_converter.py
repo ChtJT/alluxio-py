@@ -1,64 +1,160 @@
+import json
+import os
 from typing import Any
 from typing import Dict
+from typing import List
+from typing import Optional
 
+import fsspec
 import numpy as np
+import pyarrow as pa
 import torch
 
+import lance
 from Lance.src.blender.main.base.base_converter import BaseConverter
 
 
 class TensorConverter(BaseConverter):
-    def _first_tensor(self, obj: Any):
-        """递归地在 obj 中找到第一个 torch.Tensor。优先 obj['model']。"""
-        import torch
+    # ---------- 基础加载 ----------
+    def _load_any(self, source: str):
+        ext = os.path.splitext(source)[1].lower()
+        if ext == ".safetensors":
+            from safetensors.torch import load_file
 
-        if isinstance(obj, torch.Tensor):
-            return obj
+            return load_file(source)
+        try:
+            return torch.load(source, map_location="cpu", weights_only=True)
+        except TypeError:
+            return torch.load(source, map_location="cpu")
 
+    def _extract_state_dict(self, obj: Any) -> Dict[str, torch.Tensor]:
         if isinstance(obj, dict):
-            # 1) 优先 model（OpenNMT 常见）
-            if "model" in obj and isinstance(obj["model"], dict):
-                t = self._first_tensor(obj["model"])
-                if t is not None:
-                    return t
-            # 2) 其次遍历其他键
-            for v in obj.values():
-                t = self._first_tensor(v)
-                if t is not None:
-                    return t
-            return None
+            # 1) 直接是 state_dict
+            if obj and all(isinstance(v, torch.Tensor) for v in obj.values()):
+                return obj
+            # 2) 常见包装
+            for key in ("state_dict", "model", "weights"):
+                if key in obj and isinstance(obj[key], dict):
+                    inner = obj[key]
+                    if inner and all(
+                        isinstance(v, torch.Tensor) for v in inner.values()
+                    ):
+                        return inner
+        # 兜底：单 tensor 或其它结构 -> 失败
+        raise ValueError("checkpoint 不包含完整的 state_dict（需要 name->tensor 映射）")
 
-        if isinstance(obj, (list, tuple)):
-            for v in obj:
-                t = self._first_tensor(v)
-                if t is not None:
-                    return t
-            return None
+    # ---------- state_dict <-> Lance 表 ----------
+    def _state_to_table(self, sd: Dict[str, torch.Tensor]) -> pa.Table:
+        names: List[str] = []
+        datas: List[bytes] = []
+        dtypes: List[str] = []
+        shapes: List[str] = []
 
-        return None
+        for name, t in sd.items():
+            if not isinstance(t, torch.Tensor):
+                continue
+            arr = t.detach().cpu().numpy()
+            names.append(name)
+            datas.append(arr.tobytes(order="C"))
+            dtypes.append(str(arr.dtype))
+            shapes.append(json.dumps(list(arr.shape)))
 
+        return pa.table(
+            {
+                "name": pa.array(names, type=pa.string()),
+                "data": pa.array(datas, type=pa.binary()),
+                "dtype": pa.array(dtypes, type=pa.string()),
+                "shape": pa.array(shapes, type=pa.string()),
+            }
+        )
+
+    def _table_to_state(self, tbl: pa.Table) -> Dict[str, torch.Tensor]:
+        sd: Dict[str, torch.Tensor] = {}
+        names = tbl["name"].to_pylist()
+        datas = tbl["data"].to_pylist()
+        dtypes = tbl["dtype"].to_pylist()
+        shapes = [json.loads(s) for s in tbl["shape"].to_pylist()]
+        for n, b, dt, shp in zip(names, datas, dtypes, shapes):
+            np_arr = np.frombuffer(b, dtype=np.dtype(dt)).reshape(shp)
+            sd[n] = torch.from_numpy(np_arr)
+        return sd
+
+    # ---------- BaseConverter 接口：保持向后兼容（返回 first tensor + 表） ----------
     def _convert_impl(self, source: str) -> Dict[str, Any]:
-        obj = torch.load(source, map_location="cpu")
+        obj = self._load_any(source)
+        sd = self._extract_state_dict(obj)
+        tbl = self._state_to_table(sd)
 
-        # 尝试直接是 Tensor
-        if isinstance(obj, torch.Tensor):
-            t = obj
-        else:
-            t = self._first_tensor(obj)
+        # 为兼容你旧逻辑，额外返回“第一个 tensor 的 numpy”
+        first_name = next(iter(sd))
+        first_arr = (
+            sd[first_name]
+            .detach()
+            .cpu()
+            .numpy()
+            .astype(np.float32, copy=False)
+        )
+        return {"uri": source, "tensor": first_arr, "table": tbl}
 
-        if t is None:
-            # 给出更可读的报错信息，便于定位
-            raise ValueError(
-                f"未在 {source} 的 checkpoint 中找到任何 torch.Tensor。"
-                " 这是一个嵌套结构（如 {'model': state_dict, ...}）吗？"
+    # ---------- 一步写入 Lance（整套权重） ----------
+    def convert_and_write_full(
+        self,
+        source: str,
+        lance_uri: str,
+        *,
+        storage_options: Optional[Dict[str, str]] = None,
+        overwrite: bool = False,
+    ) -> str:
+        obj = self._load_any(source)
+        sd = self._extract_state_dict(obj)
+        tbl = self._state_to_table(sd)
+        if overwrite:
+            fs = fsspec.filesystem(
+                "s3",
+                key=(storage_options or {}).get("aws_access_key_id"),
+                secret=(storage_options or {}).get("aws_secret_access_key"),
+                client_kwargs={
+                    "endpoint_url": (storage_options or {}).get("endpoint")
+                    or (storage_options or {}).get("endpoint_override"),
+                    "region_name": (storage_options or {}).get(
+                        "region", "us-east-1"
+                    ),
+                },
+                use_ssl=str((storage_options or {}).get("endpoint", ""))
+                .lower()
+                .startswith("https://"),
+                anon=False,
             )
+            if fs.exists(lance_uri):
+                fs.rm(lance_uri, recursive=True)
+        lance.write_dataset(
+            tbl, lance_uri, storage_options=storage_options or {}
+        )
+        return lance_uri
 
-        # 转 numpy（统一为 float32，避免半精度/整型造成后续不一致）
-        arr = t.detach().cpu().numpy()
-        if arr.dtype != np.float32:
-            arr = arr.astype(np.float32, copy=False)
+    # ---------- 从 Lance 读取并 load 到模型 ----------
+    @staticmethod
+    def load_from_lance_into_model(
+        lance_uri: str,
+        model: torch.nn.Module,
+        *,
+        storage_options: Optional[Dict[str, str]] = None,
+        strict: bool = False,
+        strip_module_prefix: bool = True,
+    ):
+        ds = lance.dataset(lance_uri, storage_options=storage_options or {})
+        tbl = ds.to_table()
+        conv = TensorConverter()
+        sd = conv._table_to_state(tbl)
 
-        return {
-            "uri": source,
-            "tensor": arr,
-        }
+        if strip_module_prefix:
+            from collections import OrderedDict
+
+            fixed = OrderedDict()
+            for k, v in sd.items():
+                nk = k[7:] if k.startswith("module.") else k
+                fixed[nk] = v
+            sd = fixed
+
+        missing = model.load_state_dict(sd, strict=strict)
+        return missing
