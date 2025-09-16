@@ -3,8 +3,9 @@ from typing import Dict
 from typing import Iterable
 from typing import Optional
 
-import lance
 import pyarrow as pa
+
+import lance
 
 
 class LanceWriter:

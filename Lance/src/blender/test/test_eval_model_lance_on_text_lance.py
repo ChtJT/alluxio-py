@@ -1,6 +1,5 @@
 import os
 
-import lance
 import numpy as np
 import pyarrow as pa
 import pytest
@@ -10,6 +9,7 @@ import torch.nn.functional as F
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 
+import lance
 from Lance.src.blender.main.integration.core.mapping import ColumnMapping
 from Lance.src.blender.main.integration.pytorch.lance_torch_dataset import (
     LanceTorchDataset,

@@ -1,37 +1,46 @@
-import os
-import json
 import argparse
-from typing import Any, Dict
+import json
+import os
 import shutil
+from typing import Any
+from typing import Dict
 
 import fsspec
 import numpy as np
-import pandas as pd
 import pyarrow as pa
 import pyarrow.csv as pacsv
 import pyarrow.parquet as pq
-import lance
-
 import torch
-from torch.utils.data import DataLoader
 from torch.optim import AdamW
-from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassification, get_linear_schedule_with_warmup
+from torch.utils.data import DataLoader
+from transformers import AutoConfig
+from transformers import AutoModelForSequenceClassification
+from transformers import AutoTokenizer
+from transformers import get_linear_schedule_with_warmup
 
+import lance
 from Lance.src.blender.main.converter.tensor_converter import TensorConverter
 from Lance.src.blender.main.converter.text_converter import TextConverter
-
 from Lance.src.blender.main.integration.core.mapping import ColumnMapping
-from Lance.src.blender.main.integration.pytorch.lance_torch_dataset import LanceTorchDataset
+from Lance.src.blender.main.integration.pytorch.lance_torch_dataset import (
+    LanceTorchDataset,
+)
 from Lance.src.blender.main.utils.s3_options import get_s3_storage_options
 
 
-
-
 def _mk_s3fs_kwargs(storage_options: Dict[str, Any]) -> Dict[str, Any]:
-    key = storage_options.get("aws_access_key_id") or storage_options.get("key")
-    secret = storage_options.get("aws_secret_access_key") or storage_options.get("secret")
-    region = storage_options.get("region") or storage_options.get("client_kwargs", {}).get("region_name")
-    endpoint = storage_options.get("endpoint_override") or storage_options.get("client_kwargs", {}).get("endpoint_url")
+    key = storage_options.get("aws_access_key_id") or storage_options.get(
+        "key"
+    )
+    secret = storage_options.get(
+        "aws_secret_access_key"
+    ) or storage_options.get("secret")
+    region = storage_options.get("region") or storage_options.get(
+        "client_kwargs", {}
+    ).get("region_name")
+    endpoint = storage_options.get("endpoint_override") or storage_options.get(
+        "client_kwargs", {}
+    ).get("endpoint_url")
     kwargs: Dict[str, Any] = {}
     if key:
         kwargs["key"] = key
@@ -55,7 +64,9 @@ def open_with_fsspec(path: str, mode: str, storage_options: Dict[str, Any]):
 
 
 def copy_to_s3(src: str, dst: str, storage_options: Dict[str, Any]):
-    with fsspec.open(src, "rb") as fi, open_with_fsspec(dst, "wb", storage_options) as fo:
+    with fsspec.open(src, "rb") as fi, open_with_fsspec(
+        dst, "wb", storage_options
+    ) as fo:
         shutil.copyfileobj(fi, fo)
     return dst
 
@@ -90,9 +101,13 @@ def load_table_from_s3(input_uri: str, storage_options: Dict[str, Any]):
     raise ValueError(input_uri)
 
 
-def write_lance_to_s3(table_or_ds, lance_uri: str, storage_options: Dict[str, Any]):
+def write_lance_to_s3(
+    table_or_ds, lance_uri: str, storage_options: Dict[str, Any]
+):
     if isinstance(table_or_ds, pa.Table):
-        lance.write_dataset(table_or_ds, lance_uri, storage_options=storage_options)
+        lance.write_dataset(
+            table_or_ds, lance_uri, storage_options=storage_options
+        )
         return
     raise TypeError()
 
@@ -125,11 +140,23 @@ class TextLabelMapper:
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--s3-endpoint", type=str, default=os.getenv("S3_ENDPOINT", ""))
+    p.add_argument(
+        "--s3-endpoint", type=str, default=os.getenv("S3_ENDPOINT", "")
+    )
     p.add_argument("--s3-bucket", type=str, required=True)
-    p.add_argument("--aws-region", type=str, default=os.getenv("AWS_REGION", "us-east-1"))
-    p.add_argument("--aws-access-key", type=str, default=os.getenv("AWS_ACCESS_KEY_ID", ""))
-    p.add_argument("--aws-secret-key", type=str, default=os.getenv("AWS_SECRET_ACCESS_KEY", ""))
+    p.add_argument(
+        "--aws-region", type=str, default=os.getenv("AWS_REGION", "us-east-1")
+    )
+    p.add_argument(
+        "--aws-access-key",
+        type=str,
+        default=os.getenv("AWS_ACCESS_KEY_ID", ""),
+    )
+    p.add_argument(
+        "--aws-secret-key",
+        type=str,
+        default=os.getenv("AWS_SECRET_ACCESS_KEY", ""),
+    )
     p.add_argument("--raw-src", type=str, default="")
     p.add_argument("--raw-dst", type=str, default="")
     p.add_argument("--dataset-input", type=str, required=True)
@@ -163,8 +190,12 @@ def main():
 
     print("[1/5] load raw:", args.dataset_input)
     if args.use_text_converter and TextConverter is not None:
-        tmp_local = os.path.abspath("./_tmp_raw" + os.path.splitext(args.dataset_input)[1])
-        with fsspec.open(args.dataset_input, "rb") as fi, open(tmp_local, "wb") as fo:
+        tmp_local = os.path.abspath(
+            "./_tmp_raw" + os.path.splitext(args.dataset_input)[1]
+        )
+        with fsspec.open(args.dataset_input, "rb") as fi, open(
+            tmp_local, "wb"
+        ) as fo:
             shutil.copyfileobj(fi, fo)
         table = TextConverter().convert(tmp_local)["table"]
     else:
@@ -178,19 +209,27 @@ def main():
     mapper = TextLabelMapper().fit(label_arr)
     if not all(isinstance(x, int) for x in label_arr):
         new_labels = pa.array(mapper.transform(label_arr), type=pa.int64())
-        table = table.set_column(table.schema.get_field_index(args.label_col), args.label_col, new_labels)
+        table = table.set_column(
+            table.schema.get_field_index(args.label_col),
+            args.label_col,
+            new_labels,
+        )
         meta = dict(table.schema.metadata or {})
         meta[b"label2id"] = json.dumps(mapper.label2id).encode("utf8")
         table = table.replace_schema_metadata(meta)
 
-    lance_uri = f"{args.out_prefix.rstrip('/')}/datasets/{args.dataset_name}.lance"
+    lance_uri = (
+        f"{args.out_prefix.rstrip('/')}/datasets/{args.dataset_name}.lance"
+    )
     print("[1/5] write lance:", lance_uri)
     write_lance_to_s3(table, lance_uri, storage_options)
 
     if args.ckpt_input and args.weights_out and TensorConverter is not None:
         print(f"[1.a] ckpt -> lance: {args.ckpt_input} -> {args.weights_out}")
         ckpt_tmp = os.path.abspath("./_tmp_ckpt.pth")
-        with fsspec.open(args.ckpt_input, "rb") as fi, open(ckpt_tmp, "wb") as fo:
+        with fsspec.open(args.ckpt_input, "rb") as fi, open(
+            ckpt_tmp, "wb"
+        ) as fo:
             shutil.copyfileobj(fi, fo)
         tout = TensorConverter().convert(ckpt_tmp)
         ttbl = numpy_to_lance_table(tout["tensor"], name="tensor")
@@ -205,7 +244,9 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(args.model_id)
     num_labels = len(set(ds.to_table(columns=[args.label_col]).to_pylist()))
     config = AutoConfig.from_pretrained(args.model_id, num_labels=num_labels)
-    model = AutoModelForSequenceClassification.from_pretrained(args.model_id, config=config)
+    model = AutoModelForSequenceClassification.from_pretrained(
+        args.model_id, config=config
+    )
 
     print("[3/5] dataset+dataloader")
 
@@ -221,7 +262,9 @@ def main():
         columns=None,
     )
 
-    train_loader = DataLoader(train_ds, batch_size=args.batch_size, shuffle=True)
+    train_loader = DataLoader(
+        train_ds, batch_size=args.batch_size, shuffle=True
+    )
 
     print("[4/5] train")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

@@ -1,12 +1,12 @@
 import os
 
-import lance
 import numpy as np
 import pyarrow as pa
 import pytest
 import torch
 from huggingface_hub.utils import HfHubHTTPError
 
+import lance
 from Lance.src.blender.main.converter.tensor_converter import TensorConverter
 from Lance.src.blender.main.downloader.model_downloader import ModelDownloader
 
