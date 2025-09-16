@@ -22,7 +22,7 @@ class ModelDownloader(BaseDownloader):
         name: str,
         cache_dir: Optional[str] = None,
         *,
-        mode: str = "repo",   # "repo" | "transformers" | "url"
+        mode: str = "repo",  # "repo" | "transformers" | "url"
         model_name: str = "AutoModel",
         tokenizer: str = "AutoTokenizer",
         use_fast_tokenizer: bool = True,
@@ -43,7 +43,9 @@ class ModelDownloader(BaseDownloader):
         self.from_pretrained_kwargs = from_pretrained_kwargs or {}
         self.timeout = timeout
 
-    def _download_impl(self) -> Union[RepoResult, ArrowResult, TransformersResult]:
+    def _download_impl(
+        self,
+    ) -> Union[RepoResult, ArrowResult, TransformersResult]:
         if self.mode == "repo":
             local_dir = os.path.join(self.cache_dir or ".", "model_repo")
             path = snapshot_download(
@@ -63,7 +65,9 @@ class ModelDownloader(BaseDownloader):
             filename = os.path.basename(self.name.split("?")[0]) or "model.pth"
             local_path = os.path.join(local_dir, filename)
             if not os.path.exists(local_path):
-                with requests.get(self.name, stream=True, timeout=self.timeout) as r:
+                with requests.get(
+                    self.name, stream=True, timeout=self.timeout
+                ) as r:
                     r.raise_for_status()
                     with open(local_path, "wb") as f:
                         for chunk in r.iter_content(chunk_size=1024 * 1024):

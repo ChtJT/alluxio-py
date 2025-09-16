@@ -1,5 +1,6 @@
 import os
 import uuid
+
 import pytest
 import s3fs
 
@@ -9,6 +10,7 @@ SECRET_KEY = os.getenv("S3_SECRET_KEY", "minioadmin123")
 REGION = os.getenv("S3_REGION", "us-east-1")
 BUCKET = os.getenv("S3_BUCKET", "my-bucket")
 TEST_PREFIX = os.getenv("S3_TEST_PREFIX", "pytest")
+
 
 @pytest.fixture(scope="session")
 def s3fs_client():
@@ -36,8 +38,10 @@ def s3fs_client():
     except Exception:
         pass
 
+
 def test_bucket_exists(s3fs_client):
     assert s3fs_client.exists(BUCKET), f"Bucket {BUCKET} should exist"
+
 
 def test_write_and_read(s3fs_client):
     key = f"{TEST_PREFIX}/{uuid.uuid4().hex}.txt"
