@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Any
+from typing import Any, Tuple
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -75,17 +75,16 @@ class TensorConverter(BaseConverter):
         dtypes = tbl["dtype"].to_pylist()
         shapes = [json.loads(s) for s in tbl["shape"].to_pylist()]
         for n, b, dt, shp in zip(names, datas, dtypes, shapes):
-            np_arr = np.frombuffer(b, dtype=np.dtype(dt)).reshape(shp)
+            # The key: `.copy()` makes the numpy buffer writable, avoiding PyTorch warnings.
+            np_arr = np.frombuffer(b, dtype=np.dtype(dt)).copy().reshape(shp)
             sd[n] = torch.from_numpy(np_arr)
         return sd
 
-    # ---------- BaseConverter 接口：保持向后兼容（返回 first tensor + 表） ----------
     def _convert_impl(self, source: str) -> Dict[str, Any]:
         obj = self._load_any(source)
         sd = self._extract_state_dict(obj)
         tbl = self._state_to_table(sd)
 
-        # 为兼容你旧逻辑，额外返回“第一个 tensor 的 numpy”
         first_name = next(iter(sd))
         first_arr = (
             sd[first_name]
@@ -96,7 +95,6 @@ class TensorConverter(BaseConverter):
         )
         return {"uri": source, "tensor": first_arr, "table": tbl}
 
-    # ---------- 一步写入 Lance（整套权重） ----------
     def convert_and_write_full(
         self,
         source: str,
@@ -132,29 +130,57 @@ class TensorConverter(BaseConverter):
         )
         return lance_uri
 
-    # ---------- 从 Lance 读取并 load 到模型 ----------
     @staticmethod
     def load_from_lance_into_model(
-        lance_uri: str,
-        model: torch.nn.Module,
-        *,
-        storage_options: Optional[Dict[str, str]] = None,
-        strict: bool = False,
-        strip_module_prefix: bool = True,
+            lance_uri: str,
+            model: torch.nn.Module,
+            *,
+            storage_options: Optional[Dict[str, str]] = None,
+            strip_module_prefix: bool = True,
+            ignore_prefixes: Tuple[str, ...] = ("fc.",),
+            enforce_backbone_shape: bool = True,
     ):
         ds = lance.dataset(lance_uri, storage_options=storage_options or {})
         tbl = ds.to_table()
         conv = TensorConverter()
         sd = conv._table_to_state(tbl)
 
+        # 去掉 "module." 前缀
         if strip_module_prefix:
             from collections import OrderedDict
-
             fixed = OrderedDict()
             for k, v in sd.items():
                 nk = k[7:] if k.startswith("module.") else k
                 fixed[nk] = v
             sd = fixed
 
-        missing = model.load_state_dict(sd, strict=strict)
-        return missing
+        model_sd = model.state_dict()
+        filtered = {}
+        skipped_by_name = []
+        skipped_by_shape = []
+
+        for k, v in sd.items():
+            # 按前缀跳过（如 fc.*）
+            if any(k.startswith(pref) for pref in ignore_prefixes):
+                skipped_by_name.append(k)
+                continue
+            # 只加载模型里存在的键
+            if k not in model_sd:
+                skipped_by_name.append(k)
+                continue
+            # 形状不匹配则跳过（保护 backbone）
+            if enforce_backbone_shape and tuple(model_sd[k].shape) != tuple(v.shape):
+                skipped_by_shape.append((k, tuple(v.shape), tuple(model_sd[k].shape)))
+                continue
+            filtered[k] = v
+
+        # 非严格加载：我们已经过滤掉不想要的键
+        missing = model.load_state_dict(filtered, strict=False)
+
+        return {
+            "missing_keys": missing.missing_keys,
+            "unexpected_keys": missing.unexpected_keys,
+            "skipped_by_name": skipped_by_name,
+            "skipped_by_shape": skipped_by_shape,
+            "loaded_keys": list(filtered.keys()),
+        }

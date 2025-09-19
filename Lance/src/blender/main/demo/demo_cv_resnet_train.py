@@ -18,6 +18,8 @@ from torchvision import models
 from torchvision import transforms
 
 import lance
+from tqdm import tqdm
+
 from Lance.src.blender.main.converter.png_converter import PngConverter
 from Lance.src.blender.main.converter.tensor_converter import TensorConverter
 from Lance.src.blender.main.downloader.dataset_downloader import (
@@ -248,48 +250,51 @@ def main():
 
     model = models.resnet18(weights=None)
     model.fc = nn.Linear(model.fc.in_features, num_classes)
-    missing = TensorConverter.load_from_lance_into_model(
+    res = TensorConverter.load_from_lance_into_model(
         weights_uri,
         model,
         storage_options=so_lance,
-        strict=False,
+        strip_module_prefix=True,
+        ignore_prefixes=("fc.",),  # 跳过分类头
+        enforce_backbone_shape=True,  # 形状不合的层也跳过
     )
 
     def _all_fc(keys):
-        return all(k.startswith("fc.") for k in keys)
+        return all(str(k).startswith("fc.") for k in keys)
 
-    if not (
-        _all_fc(missing.missing_keys) and _all_fc(missing.unexpected_keys)
-    ):
+    if not (_all_fc(res["missing_keys"]) and _all_fc(res["unexpected_keys"]) and
+            all(k.startswith("fc.") for k in res["skipped_by_name"]) and
+            all(k.startswith("fc.") for k, _, __ in res["skipped_by_shape"])):
         raise RuntimeError(
-            f"Unexpected state_dict mismatch:\n"
-            f"  missing_keys={missing.missing_keys}\n"
-            f"  unexpected_keys={missing.unexpected_keys}\n"
-            f"It is expected that only fc.* will not match (because num_classes != 1000)。"
+            "Backbone The weights failed to align successfully.：\n"
+            f"missing_keys={res['missing_keys']}\n"
+            f"unexpected_keys={res['unexpected_keys']}\n"
+            f"skipped_by_name={res['skipped_by_name']}\n"
+            f"skipped_by_shape={res['skipped_by_shape']}\n"
+            "预期仅 fc.* 不匹配/被跳过。"
         )
 
-    print(
-        f"[weights] loaded backbone; skipped classifier: "
-        f"missing={missing.missing_keys}, unexpected={missing.unexpected_keys}"
-    )
+    print(f"[OK] Loading completed, {len(res['loaded_keys'])} backbone parameters have been loaded."
+          f"skip fc.*：{set(res['skipped_by_name']) | set(k for k, _, __ in res['skipped_by_shape'])}")
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model.to(device).train()
     opt = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
     loss_fn = nn.CrossEntropyLoss()
 
-    for _ in range(args.epochs):
+    for ep in range(args.epochs):
+        model.train()
         n = 0
-        for x, y in loader:
-            x, y = x.to(device, non_blocking=True), y.to(
-                device, non_blocking=True
-            )
+        pbar = tqdm(loader, total=min(args.steps, len(loader)), desc=f"epoch {ep + 1}/{args.epochs}")
+        for x, y in pbar:
+            x, y = x.to(device, non_blocking=True), y.to(device, non_blocking=True)
             opt.zero_grad(set_to_none=True)
             out = model(x)
             loss = loss_fn(out, y)
             loss.backward()
             opt.step()
             n += 1
+            pbar.set_postfix(loss=float(loss.detach().cpu()))
             if n >= args.steps:
                 break
 
