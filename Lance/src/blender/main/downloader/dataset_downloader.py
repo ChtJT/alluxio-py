@@ -71,7 +71,7 @@ class DatasetDownloader(BaseDownloader):
                     if has_data_files:
                         break
                 return path
-            except Exception as e:
+            except Exception as e:  # maybe can use the HfHubHTTPError
                 raise RuntimeError(f"snapshot_download 失败：{e}") from e
 
         elif self.mode == "arrow":

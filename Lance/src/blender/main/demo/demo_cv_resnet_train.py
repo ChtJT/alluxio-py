@@ -1,7 +1,5 @@
-#!/usr/bin/env python
 import argparse
 import io
-import json
 import os
 from pathlib import Path
 from typing import Any
@@ -10,7 +8,6 @@ from typing import List
 from typing import Optional
 
 import fsspec
-import numpy as np
 import pyarrow as pa
 import torch
 from PIL import Image
@@ -21,6 +18,8 @@ from torchvision import models
 from torchvision import transforms
 
 import lance
+from tqdm import tqdm
+
 from Lance.src.blender.main.converter.png_converter import PngConverter
 from Lance.src.blender.main.converter.tensor_converter import TensorConverter
 from Lance.src.blender.main.downloader.dataset_downloader import (
@@ -29,90 +28,23 @@ from Lance.src.blender.main.downloader.dataset_downloader import (
 from Lance.src.blender.main.downloader.model_downloader import ModelDownloader
 
 
-def numpy_to_lance(arr: np.ndarray, name: str = "tensor") -> pa.Table:
-    if arr.dtype != np.float32:
-        arr = arr.astype(np.float32, copy=False)
-    col = pa.array(arr.reshape(-1).tolist(), type=pa.float32())
-    tbl = pa.table({name: col})
-    meta = dict(tbl.schema.metadata or {})
-    meta[b"shape"] = json.dumps(list(arr.shape)).encode()
-    return tbl.replace_schema_metadata(meta)
+def _write_lance_overwrite(tbl: pa.Table, uri: str, so_lance: Dict[str, str]):
+    import fsspec
 
-
-def find_files(
-    root: str, exts: List[str], limit: Optional[int] = None
-) -> List[Path]:
-    out: List[Path] = []
-    for p in Path(root).rglob("*"):
-        if p.is_file() and p.suffix.lower() in exts:
-            out.append(p)
-            if limit and len(out) >= limit:
-                break
-    return out
-
-
-def images_to_lance_from_files(dataset_dir: str, limit: int) -> pa.Table:
-    conv = PngConverter()
-    imgs, labels, h, w, c = [], [], [], [], []
-    label_map: Dict[str, int] = {}
-    idx = 0
-    files = find_files(
-        dataset_dir,
-        [".png", ".jpg", ".jpeg", ".bmp", ".webp", ".tif", ".tiff"],
-        limit=None,
+    fs = fsspec.filesystem(
+        "s3",
+        key=so_lance["aws_access_key_id"],
+        secret=so_lance["aws_secret_access_key"],
+        client_kwargs={
+            "endpoint_url": so_lance["endpoint"],
+            "region_name": so_lance.get("region", "us-east-1"),
+        },
+        use_ssl=so_lance["endpoint"].lower().startswith("https://"),
+        anon=False,
     )
-    for p in files[:limit]:
-        out = conv.convert(str(p))
-        cls = p.parent.name
-        if cls not in label_map:
-            label_map[cls] = idx
-            idx += 1
-        imgs.append(out["data"])
-        h.append(out["height"])
-        w.append(out["width"])
-        c.append(out["channels"])
-        labels.append(label_map[cls])
-    return pa.table(
-        {
-            "image": pa.array(imgs, type=pa.binary()),
-            "height": pa.array(h, type=pa.int32()),
-            "width": pa.array(w, type=pa.int32()),
-            "channels": pa.array(c, type=pa.int32()),
-            "label": pa.array(labels, type=pa.int32()),
-        }
-    )
-
-
-def images_to_lance_from_arrow(split_dir: str, limit: int) -> pa.Table:
-    from datasets import load_from_disk
-
-    ds = load_from_disk(split_dir)
-    imgs, labels, hh, ww, cc = [], [], [], [], []
-    sel = ds.select(range(min(limit, len(ds))))
-    for ex in sel:
-        img = ex.get("image", ex.get("img"))
-        if hasattr(img, "convert"):
-            pil = img
-        else:
-            pil = Image.fromarray(np.array(img))
-        bio = io.BytesIO()
-        pil.save(bio, format="PNG")
-        data = bio.getvalue()
-        im = Image.open(io.BytesIO(data))
-        imgs.append(data)
-        labels.append(int(ex["label"]))
-        hh.append(im.height)
-        ww.append(im.width)
-        cc.append(len(im.getbands()))
-    return pa.table(
-        {
-            "image": pa.array(imgs, type=pa.binary()),
-            "height": pa.array(hh, type=pa.int32()),
-            "width": pa.array(ww, type=pa.int32()),
-            "channels": pa.array(cc, type=pa.int32()),
-            "label": pa.array(labels, type=pa.int32()),
-        }
-    )
+    if fs.exists(uri):
+        fs.rm(uri, recursive=True)
+    lance.write_dataset(tbl, uri, storage_options=so_lance)
 
 
 class LanceImageDataset(Dataset):
@@ -263,8 +195,8 @@ def main():
         "aws_access_key_id": so["aws_access_key_id"],
         "aws_secret_access_key": so["aws_secret_access_key"],
         "region": so["region"],
-        "endpoint": so["endpoint"],  # 用 endpoint 键
-        "allow_http": "true",  # 字符串
+        "endpoint": so["endpoint"],  # endpoint
+        "allow_http": "true",  # string
         "force_path_style": "true",
         "virtual_hosted_style": "false",
     }
@@ -276,11 +208,13 @@ def main():
     ckpt_path = _resolve_ckpt_path(
         mres, cache_dir=args.cache, model_name=args.model
     )
-    tens = TensorConverter().convert(ckpt_path)["tensor"]
-    wt_tbl = numpy_to_lance(tens)
+
     weights_uri = f"s3://{args.bucket}/{args.prefix}/weights/{_model_tag_from_path(ckpt_path)}.lance"
-    lance.write_dataset(
-        wt_tbl, weights_uri, storage_options=so_lance, mode="overwrite"
+    TensorConverter().convert_and_write_full(
+        ckpt_path,
+        weights_uri,
+        storage_options=so_lance,
+        overwrite=True,
     )
 
     dd = DatasetDownloader(
@@ -290,18 +224,19 @@ def main():
         split=args.split,
     )
     d = dd.download()
-    if isinstance(d, dict):
-        split_dir = d.get(args.split) or list(d.values())[0]
-    else:
-        split_dir = d
+    split_dir = d.get(args.split) if isinstance(d, dict) else d
+
     if args.dataset_mode == "arrow":
-        img_tbl = images_to_lance_from_arrow(split_dir, limit=args.limit)
+        img_tbl = PngConverter.images_to_lance_from_arrow(
+            split_dir, limit=args.limit
+        )
     else:
-        img_tbl = images_to_lance_from_files(split_dir, limit=args.limit)
+        img_tbl = PngConverter.images_to_lance_from_files(
+            split_dir, limit=args.limit
+        )
+
     images_uri = f"s3://{args.bucket}/{args.prefix}/datasets/{args.dataset}-{args.split}.lance"
-    lance.write_dataset(
-        img_tbl, images_uri, storage_options=so_lance, mode="overwrite"
-    )
+    _write_lance_overwrite(img_tbl, images_uri, so_lance)
 
     train_ds = LanceImageDataset(images_uri, storage_options=so_lance)
     num_classes = len(set(train_ds.labels))
@@ -315,23 +250,51 @@ def main():
 
     model = models.resnet18(weights=None)
     model.fc = nn.Linear(model.fc.in_features, num_classes)
+    res = TensorConverter.load_from_lance_into_model(
+        weights_uri,
+        model,
+        storage_options=so_lance,
+        strip_module_prefix=True,
+        ignore_prefixes=("fc.",),  # 跳过分类头
+        enforce_backbone_shape=True,  # 形状不合的层也跳过
+    )
+
+    def _all_fc(keys):
+        return all(str(k).startswith("fc.") for k in keys)
+
+    if not (_all_fc(res["missing_keys"]) and _all_fc(res["unexpected_keys"]) and
+            all(k.startswith("fc.") for k in res["skipped_by_name"]) and
+            all(k.startswith("fc.") for k, _, __ in res["skipped_by_shape"])):
+        raise RuntimeError(
+            "Backbone The weights failed to align successfully.：\n"
+            f"missing_keys={res['missing_keys']}\n"
+            f"unexpected_keys={res['unexpected_keys']}\n"
+            f"skipped_by_name={res['skipped_by_name']}\n"
+            f"skipped_by_shape={res['skipped_by_shape']}\n"
+            "预期仅 fc.* 不匹配/被跳过。"
+        )
+
+    print(f"[OK] Loading completed, {len(res['loaded_keys'])} backbone parameters have been loaded."
+          f"skip fc.*：{set(res['skipped_by_name']) | set(k for k, _, __ in res['skipped_by_shape'])}")
+
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model.to(device).train()
     opt = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
     loss_fn = nn.CrossEntropyLoss()
 
-    for _ in range(args.epochs):
+    for ep in range(args.epochs):
+        model.train()
         n = 0
-        for x, y in loader:
-            x, y = x.to(device, non_blocking=True), y.to(
-                device, non_blocking=True
-            )
+        pbar = tqdm(loader, total=min(args.steps, len(loader)), desc=f"epoch {ep + 1}/{args.epochs}")
+        for x, y in pbar:
+            x, y = x.to(device, non_blocking=True), y.to(device, non_blocking=True)
             opt.zero_grad(set_to_none=True)
             out = model(x)
             loss = loss_fn(out, y)
             loss.backward()
             opt.step()
             n += 1
+            pbar.set_postfix(loss=float(loss.detach().cpu()))
             if n >= args.steps:
                 break
 
