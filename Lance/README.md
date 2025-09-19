@@ -33,13 +33,16 @@
 
 ### 🔗 框架集成
 
-- **PyTorch**: `LanceTorchDataset`  
-- **TensorFlow**: `LanceTensorflowDataset`
+- **PyTorch**: `LanceTorchDataset`
+
+### 📦 数据集与模型管理
+
+- **DataManager**: 提供 **搜索 / 回滚 / 注册 / 删除** 等功能  
 
 ### ⚙️ 引擎模式
 
 - **Local**: 本地模式，直接调用 DataManager  
-- **Remote**: 提供 **HTTP / gRPC / WebSocket** 三种远程访问方式  
+- **Remote**: 提供 **HTTP / gRPC / WebSocket** 三种远程访问方式调用 DataManager
 
 ---
 
