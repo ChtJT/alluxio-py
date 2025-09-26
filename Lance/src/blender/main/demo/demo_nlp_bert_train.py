@@ -19,8 +19,8 @@ from transformers import AutoTokenizer
 from transformers import get_linear_schedule_with_warmup
 
 import lance
+from Lance.src.blender.main.converter.language_converter import TextConverter
 from Lance.src.blender.main.converter.tensor_converter import TensorConverter
-from Lance.src.blender.main.converter.text_converter import TextConverter
 from Lance.src.blender.main.integration.core.mapping import ColumnMapping
 from Lance.src.blender.main.integration.pytorch.lance_torch_dataset import (
     LanceTorchDataset,
