@@ -13,7 +13,6 @@ import lance
 import pandas as pd
 import pyarrow as pa
 from datafusion import SessionContext
-
 from lance import FFILanceTableProvider
 from lance import LanceDataset
 
