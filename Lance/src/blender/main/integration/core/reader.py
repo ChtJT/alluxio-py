@@ -4,10 +4,10 @@ from typing import Iterable
 from typing import List
 from typing import Optional
 
+import lance
 import numpy as np
 import pyarrow as pa
 
-import lance
 from . import transforms as T
 from .mapping import ColumnMapping
 from .utils import stable_label_id

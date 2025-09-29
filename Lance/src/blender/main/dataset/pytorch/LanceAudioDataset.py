@@ -3,11 +3,10 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+import lance
 import numpy as np
 import torch
 from torch.utils.data import Dataset
-
-import lance
 
 
 class LanceAudioDataset(Dataset):

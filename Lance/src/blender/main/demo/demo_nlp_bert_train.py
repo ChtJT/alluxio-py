@@ -6,6 +6,7 @@ from typing import Any
 from typing import Dict
 
 import fsspec
+import lance
 import numpy as np
 import pyarrow as pa
 import pyarrow.csv as pacsv
@@ -18,11 +19,10 @@ from transformers import AutoModelForSequenceClassification
 from transformers import AutoTokenizer
 from transformers import get_linear_schedule_with_warmup
 
-import lance
 from Lance.src.blender.main.converter.language_converter import TextConverter
 from Lance.src.blender.main.converter.tensor_converter import TensorConverter
 from Lance.src.blender.main.integration.core.mapping import ColumnMapping
-from Lance.src.blender.main.integration.pytorch.lance_torch_dataset import (
+from Lance.src.blender.main.integration.deep_learning_framework.pytorch.lance_torch_dataset import (
     LanceTorchDataset,
 )
 from Lance.src.blender.main.utils.s3_options import get_s3_storage_options

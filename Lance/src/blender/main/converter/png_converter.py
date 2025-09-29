@@ -8,13 +8,13 @@ from typing import Literal
 from typing import Optional
 from typing import Tuple
 
+import lance
 import numpy as np
 import pyarrow as pa
 from PIL import Image
 from PIL import ImageOps
 from PIL import UnidentifiedImageError
 
-import lance
 from Lance.src.blender.main.base.base_converter import BaseConverter
 from Lance.src.blender.main.utils.hash import sha256_bytes
 
