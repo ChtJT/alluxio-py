@@ -9,11 +9,11 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 
+import lance
 import pandas as pd
 import pyarrow as pa
 from datafusion import SessionContext
 
-import lance
 from lance import FFILanceTableProvider
 from lance import LanceDataset
 

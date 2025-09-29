@@ -3,12 +3,11 @@ from typing import Any
 from typing import Dict
 from typing import Optional
 
+import lance
 import torch
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms
-
-import lance
 
 
 class LanceImageDataset(Dataset):

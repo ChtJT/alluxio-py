@@ -10,26 +10,22 @@ from typing import Literal
 from typing import Optional
 from typing import Tuple
 
+import lance
 import numpy as np
 import pyarrow as pa
-import torch
-from hash_utils import file_metadata
-from hash_utils import sha256_bytes
-from torch.utils.data import Dataset
 
-import lance
-# your hash utils
+from Lance.src.blender.main.base.base_converter import BaseConverter
+from Lance.src.blender.main.utils.hash import file_metadata
+from Lance.src.blender.main.utils.hash import sha256_bytes
 
-
-# ---------- optional audio backends ----------
 _BACKEND = None
 try:
-    import librosa  # preferred: resample + robust loaders
+    import librosa
 
     _BACKEND = "librosa"
 except Exception:
     try:
-        import soundfile as sf  # fallback
+        import soundfile as sf
 
         _BACKEND = "soundfile"
     except Exception:
@@ -79,41 +75,41 @@ class AudioConverter(BaseConverter):
                 "No audio backend found. Install `librosa` or `soundfile`."
             )
 
-    # ---------------- single file ----------------
     def _load_audio(self, source: str) -> Tuple[np.ndarray, int, int]:
         """
-        Load audio as float32 PCM in [-1,1].
-        Returns (wave [N] or [N,], sample_rate, orig_channels).
+        Load audio as float32 mono PCM in [-1, 1].
+        Returns (wave [N], sample_rate, orig_channels).
         """
-        ext = Path(source).suffix.lower().lstrip(".")
         if _BACKEND == "librosa":
-            # librosa loads to mono by default; preserve channels then merge if needed
-            y, sr = librosa.load(
-                source,
-                sr=self.target_sr,  # resample here
-                mono=self.mono,
-            )
-            if not isinstance(y, np.ndarray):
-                y = np.asarray(y)
-            if y.ndim == 2:  # librosa mono=False gives shape (channels, n)
-                orig_ch = y.shape[0]
-                if self.mono:
-                    y = np.mean(y, axis=0)
-                else:
-                    # store as mono anyway to keep schema simple
-                    y = np.mean(y, axis=0)
-            else:
-                orig_ch = 1
-            y = y.astype(np.float32, copy=False)
-            return y, int(sr), int(orig_ch)
+            import librosa as _librosa  # local import for static checkers
 
-        # soundfile fallback (no built-in resample); keep original sr
-        data, sr = sf.read(source, always_2d=True, dtype="float32")
-        orig_ch = data.shape[1]
-        # to mono if requested
-        y = data.mean(axis=1) if self.mono else data[:, 0]
-        # NOTE: no resample here (install librosa to enable high-quality resampling)
-        return y.astype(np.float32, copy=False), int(sr), int(orig_ch)
+            # Best-effort get original channels via soundfile (optional)
+            orig_ch = 1
+            try:
+                import soundfile as _sf
+
+                orig_ch = int(_sf.info(source).channels)
+            except Exception:
+                pass
+
+            # Always decode to mono at target_sr for a stable schema
+            y, sr = _librosa.load(source, sr=self.target_sr, mono=True)
+            y = np.asarray(y, dtype=np.float32, order="C")
+            return y, int(sr), orig_ch
+
+        elif _BACKEND == "soundfile":
+            import soundfile as _sf  # local import
+
+            # soundfile does not resample; keep original sr, convert to mono
+            data, sr = _sf.read(
+                source, always_2d=True, dtype="float32"
+            )  # shape [N, C]
+            orig_ch = int(data.shape[1])
+            y = data.mean(axis=1).astype(np.float32, copy=False)  # mono
+            return y, int(sr), orig_ch
+
+        # Should not happen due to __init__ guard
+        raise RuntimeError("No audio backend available at runtime.")
 
     def _row_from_file(
         self, source: str, *, cls: str = "", label: int = -1

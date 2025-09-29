@@ -8,11 +8,11 @@ from typing import Literal
 from typing import Optional
 from typing import Tuple
 
+import lance
 import numpy as np
 import pyarrow as pa
 import torch
 
-import lance
 from Lance.src.blender.main.base.base_converter import BaseConverter
 from Lance.src.blender.main.utils.hash import file_metadata
 from Lance.src.blender.main.utils.hash import sha256_bytes
