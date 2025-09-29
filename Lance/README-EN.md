@@ -1,6 +1,6 @@
 # AI Model and Dataset Lifecycle Management System
 
-This project is built on **Lance** and **Alluxio-Py**, providing a unified pipeline for **model / dataset downloading, conversion, storage, and training**.  
+This project is built on **Lance** and **Alluxio-Py**, providing a unified pipeline for **model / dataset downloading, conversion, storage, and training**.
 It supports converting **PyTorch `.pth` model weights** and **image / text / table datasets** into the Lance format, storing them in **S3 / MinIO**, and then directly loading them into **PyTorch / TensorFlow** for training.
 
 ---
@@ -8,32 +8,32 @@ It supports converting **PyTorch `.pth` model weights** and **image / text / tab
 ## ✨ Features
 
 ### 📥 Downloader
-- **ModelDownloader**: Supports downloading models from HuggingFace Hub / URL / Transformers.  
-- **DatasetDownloader**: Supports downloading datasets from HuggingFace Datasets (Arrow/Repo).  
+- **ModelDownloader**: Supports downloading models from HuggingFace Hub / URL / Transformers.
+- **DatasetDownloader**: Supports downloading datasets from HuggingFace Datasets (Arrow/Repo).
 
 ### 🔄 Converter
-- **TensorConverter**: Converts `.pth` / `.pt` / `.safetensors` model weights into Lance.  
-- **PngConverter**: Converts image files or Arrow-format image datasets into Lance.  
-- **TextConverter**: Converts `.txt` / `.json` / `.csv` text data into Lance.  
-- **ParquetConverter**: Converts `.zip` / `.parquet` compressed or tabular files into Lance.  
+- **TensorConverter**: Converts `.pth` / `.pt` / `.safetensors` model weights into Lance.
+- **PngConverter**: Converts image files or Arrow-format image datasets into Lance.
+- **TextConverter**: Converts `.txt` / `.json` / `.csv` text data into Lance.
+- **ParquetConverter**: Converts `.zip` / `.parquet` compressed or tabular files into Lance.
 
 ### ☁️ Storage Support
-- Seamless integration with **S3 / MinIO** (`s3_options.py`).  
-- Lance datasets support **overwrite / append** write modes.  
+- Seamless integration with **S3 / MinIO** (`s3_options.py`).
+- Lance datasets support **overwrite / append** write modes.
 
 ### 🧑‍💻 Training Demo
-- **Image classification task**: `demo_cv_resnet_train.py`  
-  Uses ResNet18 + CIFAR10 dataset for quick training.  
+- **Image classification task**: `demo_cv_resnet_train.py`
+  Uses ResNet18 + CIFAR10 dataset for quick training.
 
 ### 🔗 Framework Integration
-- **PyTorch**: `LanceTorchDataset`  
+- **PyTorch**: `LanceTorchDataset`
 
 ### 📦 Dataset & Model Management
-- **DataManager**: Provides **search / rollback / register / delete** functionalities.  
+- **DataManager**: Provides **search / rollback / register / delete** functionalities.
 
 ### ⚙️ Engine Modes
-- **Local**: Call DataManager directly in local mode.  
-- **Remote**: Access DataManager via **HTTP / gRPC / WebSocket**.  
+- **Local**: Call DataManager directly in local mode.
+- **Remote**: Access DataManager via **HTTP / gRPC / WebSocket**.
 
 ---
 
@@ -81,11 +81,11 @@ python -m grpc_tools.protoc -I . --pyi_out=. --python_out=. --grpc_python_out=. 
 ---
 
 ## 📌 Roadmap
-- [ ] Support more deep learning frameworks (TF, JAX, MindSpore).  
-- [ ] Enhance multimodal dataset support (audio, video, point cloud).  
-- [ ] Improve fault tolerance and enrich download/convert functionalities.  
+- [ ] Support more deep learning frameworks (TF, JAX, MindSpore).
+- [ ] Enhance multimodal dataset support (audio, video, point cloud).
+- [ ] Improve fault tolerance and enrich download/convert functionalities.
 
 ---
 
 ## 📜 License
-This project follows the **Apache 2.0 License**.  
+This project follows the **Apache 2.0 License**.
